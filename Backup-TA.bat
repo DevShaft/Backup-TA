@@ -16,6 +16,7 @@ set /p "=Waiting for device..." < nul
 tools\adb wait-for-device > nul
 echo OK
 mkdir tmpbak > nul 2>&1
+mkdir backup > nul 2>&1
 set hasBusyBox=0
 tools\adb shell grep -q '$' /system/build.prop;echo $? > tmpbak\hasBusyBox.txt
 for /f %%a in (tmpbak\hasBusyBox.txt) do (

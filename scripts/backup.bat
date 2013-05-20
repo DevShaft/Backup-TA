@@ -28,6 +28,7 @@ echo =======================================
 tools\adb shell su -c "%bb% md5sum /sdcard/backupTA.img | %bb% grep -o '^[^ ]*'">tmpbak\backup_backupMD5.txt
 set /p backup_currentPartitionMD5=<tmpbak\backup_currentPartitionMD5.txt
 set /p backup_backupMD5=<tmpbak\backup_backupMD5.txt
+verify > nul
 if NOT "%backup_currentPartitionMD5%" == "%backup_backupMD5%" (
 	echo FAILED
 	goto onBackupFailed
@@ -49,6 +50,7 @@ echo =======================================
 tools\md5 -l -n tmpbak\TA.img>tmpbak\backup_backupPulledMD5.txt
 if NOT "%errorlevel%" == "0" goto onBackupFailed
 set /p backup_backupPulledMD5=<tmpbak\backup_backupPulledMD5.txt
+verify > nul
 if NOT "%backup_currentPartitionMD5%" == "%backup_backupPulledMD5%" (
 	echo FAILED
 	goto onBackupFailed

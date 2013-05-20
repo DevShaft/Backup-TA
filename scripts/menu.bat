@@ -12,10 +12,11 @@ echo  [  Backup-TA v8.0 for Sony Xperia                              ]
 echo  [ ------------------------------------------------------------ ]
 echo  [  1. Backup                                                   ]
 echo  [  2. Restore                                                  ]
-echo  [  3. Convert v4 backup                                        ]
-echo  [  4. Quit                                                     ]
+echo  [  3. Restore dry-run                                          ]
+echo  [  4. Convert v4 backup                                        ]
+echo  [  5. Quit                                                     ]
 echo  [ ------------------------------------------------------------ ]
-choice /c:1234 /m "Please make your decision:"
+choice /c:12345 /m "Please make your decision:"
 set menuChoice=%errorlevel%
 if %menuChoice% == 1 (
 	call scripts/backup.bat backupTA
@@ -26,10 +27,14 @@ if %menuChoice% == 2 (
 	set menuChoice=0
 )
 if %menuChoice% == 3 (
-	call scripts/convert.bat showConvertV4
+	call scripts/restore.bat restoreTAdry
 	set menuChoice=0
 )
 if %menuChoice% == 4 (
+	call scripts/convert.bat showConvertV4
+	set menuChoice=0
+)
+if %menuChoice% == 5 (
 	set menuChoice=-1
 )
 

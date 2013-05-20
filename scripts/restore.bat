@@ -21,7 +21,9 @@ if errorlevel 2 goto onRestoreCancelled
 
 echo.
 
-set /p restore_inputIMEI=Enter your IMEI:
+set /p restore_inputIMEI=Enter your IMEI (digits only):
+call scripts\string-util.bat strlen restore_inputIMEILen restore_inputIMEI
+if NOT "%restore_inputIMEILen%" == "15" goto onRestoreInvalidIMEI
 set restore_inputIMEI=!restore_inputIMEI:~0,-1!
 verify > nul
 
@@ -151,6 +153,14 @@ REM ## RESTORE SUCCESS
 REM #####################
 :onRestoreSuccess
 call:exit 1
+goto:eof
+
+REM #####################
+REM ## RESTORE INVALID IMEI
+REM #####################
+:onRestoreInvalidIMEI
+echo Invalid IMEI provided.
+goto onRestoreCancelled
 goto:eof
 
 REM #####################

@@ -1,4 +1,5 @@
 @echo off
+mode con:cols=70 lines=40
 cd %~dp0
 call scripts\license.bat showLicense
 call:initialize

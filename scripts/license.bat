@@ -8,7 +8,7 @@ REM #####################
 cls
 echo.
 echo  [ ------------------------------------------------------------ ]
-echo  [  Backup-TA v8.0 for Sony Xperia               MIT License    ]
+echo  [  Backup-TA v8.1 for Sony Xperia               MIT License    ]
 echo  [ ------------------------------------------------------------ ]
 echo  [  Copyright (C) 2013 DevShaft                                 ]
 echo  [                                                              ]

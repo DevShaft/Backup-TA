@@ -1,3 +1,16 @@
+Backup-TA v8.1 (2013-05-20)
+==============================
+New Features, Improvements
+--------------------------
+- Added menu option to 'dry run' the restore, so a restore can be tested without writing.
+- Added IMEI length check when restoring.
+- Added extra safeguard to make sure a restore is fully written from memory to disk when restore ends.
+
+Fixed Bugs
+----------
+- Fixed bug which caused the tool to think a restore was unsuccesful while it was not.
+
+
 Backup-TA v8.0 (2013-05-18)
 ==============================
 New Features, Improvements

@@ -1,3 +1,11 @@
+Backup-TA v8.2 (2013-05-21)
+==============================
+Fixed Bugs
+----------
+- Added backwards compatibility for backups made with versions before v8.0.
+- Fixed bug which caused the tool to not use busybox.
+
+
 Backup-TA v8.1 (2013-05-20)
 ==============================
 New Features, Improvements

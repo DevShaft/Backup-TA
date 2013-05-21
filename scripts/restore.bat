@@ -20,11 +20,12 @@ choice /m "Are you sure you want to restore the TA Partition?"
 if errorlevel 2 goto onRestoreCancelled
 
 echo.
-
 set /p restore_inputIMEI=Enter your IMEI (digits only):
 call scripts\string-util.bat strlen restore_inputIMEILen restore_inputIMEI
 if NOT "%restore_inputIMEILen%" == "15" goto onRestoreInvalidIMEI
+setlocal enabledelayedexpansion
 set restore_inputIMEI=!restore_inputIMEI:~0,-1!
+setlocal disabledelayedexpansion
 verify > nul
 
 echo.

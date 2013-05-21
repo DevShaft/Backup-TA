@@ -1,3 +1,15 @@
+Backup-TA v8.3 (2013-05-21)
+==============================
+New Features, Improvements
+--------------------------
+- Added backup selector when restoring.
+- Backups are now saved with datetime suffix.
+
+Fixed Bugs
+----------
+- Fixed bug in IMEI check.
+
+
 Backup-TA v8.2 (2013-05-21)
 ==============================
 Fixed Bugs

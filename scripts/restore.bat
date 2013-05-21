@@ -40,6 +40,12 @@ echo  INTEGRITY CHECK
 echo =======================================
 set /p restore_savedBackupMD5=<tmpbak\TA.md5
 verify > nul
+call scripts\string-util.bat strlen restore_savedBackupMD5Len restore_savedBackupMD5
+set /a restore_savedBackupMD5TrailingSpaces=%restore_savedBackupMD5Len%-32
+setlocal enabledelayedexpansion
+for /f "tokens=* delims= " %%a in ("%restore_savedBackupMD5%") do set restore_savedBackupMD5=%%a
+for /l %%a in (1,1,100) do if "!restore_savedBackupMD5:~-1!"==" " set restore_savedBackupMD5=!restore_savedBackupMD5:~0,-%restore_savedBackupMD5TrailingSpaces%!
+setlocal disabledelayedexpansion
 tools\md5 -l -n tmpbak\TA.img>tmpbak\restore_backupMD5.txt
 if NOT "%errorlevel%" == "0" goto onRestoreFailed
 set /p restore_backupMD5=<tmpbak\restore_backupMD5.txt

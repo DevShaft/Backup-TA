@@ -61,7 +61,7 @@ echo.
 echo =======================================
 echo  COMPARE TA PARTITION WITH BACKUP
 echo =======================================
-tools\adb shell su -c "md5sum %partition% | %bb% grep -o '^[^ ]*'">tmpbak\restore_currentPartitionMD5.txt
+tools\adb shell su -c "%bb% md5sum %partition% | %bb% grep -o '^[^ ]*'">tmpbak\restore_currentPartitionMD5.txt
 set /p restore_currentPartitionMD5=<tmpbak\restore_currentPartitionMD5.txt
 verify > nul
 if "%restore_currentPartitionMD5%" == "%restore_savedBackupMD5%" (
@@ -75,7 +75,7 @@ echo.
 echo =======================================
 echo  BACKUP CURRENT TA PARTITION
 echo =======================================
-tools\adb shell su -c "dd if=%partition% of=/sdcard/revertTA.img && sync && sync && sync && sync"
+tools\adb shell su -c "%bb% dd if=%partition% of=/sdcard/revertTA.img && %bb% sync && %bb% sync && %bb% sync && %bb% sync"
 if NOT "%errorlevel%" == "0" goto onRestoreFailed
 
 echo.
@@ -89,7 +89,7 @@ echo.
 echo =======================================
 echo  INTEGRITY CHECK
 echo =======================================
-tools\adb shell su -c "md5sum /sdcard/restoreTA.img | %bb% grep -o '^[^ ]*'">tmpbak\restore_pushedBackupMD5.txt
+tools\adb shell su -c "%bb% md5sum /sdcard/restoreTA.img | %bb% grep -o '^[^ ]*'">tmpbak\restore_pushedBackupMD5.txt
 if NOT "%errorlevel%" == "0" goto onRestoreFailed
 set /p restore_pushedBackupMD5=<tmpbak\restore_pushedBackupMD5.txt
 verify > nul
@@ -104,9 +104,9 @@ echo.
 echo =======================================
 echo  IMEI CHECK
 echo =======================================
-tools\adb shell su -c "cat %partition% | %bb% grep -m 1 -o %restore_inputIMEI%">tmpbak\restore_partitionIMEI.txt
+tools\adb shell su -c "%bb% cat %partition% | %bb% grep -m 1 -o %restore_inputIMEI%">tmpbak\restore_partitionIMEI.txt
 if NOT "%errorlevel%" == "0" goto onRestoreFailed
-tools\adb shell su -c "cat /sdcard/restoreTA.img | %bb% grep -m 1 -o %restore_inputIMEI%">tmpbak\restore_backupIMEI.txt
+tools\adb shell su -c "%bb% cat /sdcard/restoreTA.img | %bb% grep -m 1 -o %restore_inputIMEI%">tmpbak\restore_backupIMEI.txt
 if NOT "%errorlevel%" == "0" goto onRestoreFailed
 set /p restore_partitionIMEI=<tmpbak\restore_partitionIMEI.txt
 set /p restore_backupIMEI=<tmpbak\restore_backupIMEI.txt
@@ -124,7 +124,7 @@ echo =======================================
 echo  RESTORE BACKUP
 echo =======================================
 if NOT "%restore_dryRun%" == "1" (
-	tools\adb shell su -c "dd if=/sdcard/restoreTA.img of=%partition% && sync && sync && sync && sync"
+	tools\adb shell su -c "%bb% dd if=/sdcard/restoreTA.img of=%partition% && %bb% sync && %bb% sync && %bb% sync && %bb% sync"
 	if NOT "%errorlevel%" == "0" goto onRestoreFailed
 ) else (
 	echo --- dry run ---
@@ -135,7 +135,7 @@ echo.
 echo =======================================
 echo  COMPARE NEW TA PARTITION WITH BACKUP
 echo =======================================
-tools\adb shell su -c "md5sum %partition% | %bb% grep -o '^[^ ]*'">tmpbak\restore_restoredMD5.txt
+tools\adb shell su -c "%bb% md5sum %partition% | %bb% grep -o '^[^ ]*'">tmpbak\restore_restoredMD5.txt
 if NOT "%restore_dryRun%" == "1" (
 	set /p restore_restoredMD5=<tmpbak\restore_restoredMD5.txt
 	verify > nul
@@ -192,14 +192,14 @@ echo =======================================
 echo  REVERT RESTORE
 echo =======================================
 if NOT "%restore_dryRun%" == "1" (
-	tools\adb shell su -c "dd if=/sdcard/revertTA.img of=%partition% && sync && sync && sync && sync"
+	tools\adb shell su -c "%bb% dd if=/sdcard/revertTA.img of=%partition% && %bb% sync && %bb% sync && %bb% sync && %bb% sync"
 )
 
 echo.
 echo =======================================
 echo  REVERT VERIFICATION
 echo =======================================
-tools\adb shell su -c "md5sum %partition% | %bb% grep -o '^[^ ]*'">tmpbak\restore_revertedMD5.txt
+tools\adb shell su -c "%bb% md5sum %partition% | %bb% grep -o '^[^ ]*'">tmpbak\restore_revertedMD5.txt
 if NOT "%restore_dryRun%" == "1" (
 	set /p restore_revertedMD5=<tmpbak\restore_revertedMD5.txt
 ) else (

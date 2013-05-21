@@ -1,5 +1,5 @@
 @echo off
-mode con:cols=70 lines=40
+set version=v8.2
 cd %~dp0
 call scripts\license.bat showLicense
 call:initialize

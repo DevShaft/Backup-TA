@@ -8,7 +8,7 @@ REM #####################
 cls
 echo.
 echo  [ ------------------------------------------------------------ ]
-echo  [  Backup-TA v8.1 for Sony Xperia                              ]
+echo  [  Backup-TA %version% for Sony Xperia                              ]
 echo  [ ------------------------------------------------------------ ]
 echo  [  1. Backup                                                   ]
 echo  [  2. Restore                                                  ]

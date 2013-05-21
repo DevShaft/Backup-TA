@@ -7,11 +7,6 @@ REM #####################
 :backupTA
 echo.
 
-if exist backup\TA-Backup.zip (
-	choice /m "It appears you already have a TA backup. Are you sure you want overwrite it?"
-	if errorlevel 2 goto onBackupCancelled
-)
-
 if NOT exist backup mkdir backup > nul 2>&1
 
 echo.
@@ -64,7 +59,8 @@ echo  PACKAGE BACKUP
 echo =======================================
 echo %backup_backupPulledMD5%>tmpbak\TA.md5
 cd tmpbak
-..\tools\zip a ..\backup\TA-backup.zip TA.img TA.md5
+call ..\scripts\date-util.bat getDateTime backup_timestamp
+..\tools\zip a ..\backup\TA-backup-%backup_timestamp%.zip TA.img TA.md5
 if NOT "%errorlevel%" == "0" goto onBackupFailed
 cd..
 

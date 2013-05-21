@@ -30,9 +30,36 @@ verify > nul
 
 echo.
 echo =======================================
+echo  CHOOSE BACKUP TO RESTORE
+echo =======================================
+setLocal enabledelayedexpansion
+echo off > tmpbak\restoreList
+set restore_restoreIndex=0
+for /f "tokens=*" %%D in ('dir/b backup\TA-Backup*.zip') do (
+	set /a restore_restoreIndex+=1
+	echo [!restore_restoreIndex!] %%D >> tmpbak\restoreList
+)
+echo [Q] Quit >> tmpbak\restoreList
+type tmpbak\restoreList
+
+:restoreChoose
+set /p restore_restoreChosen=Please make your decision:
+
+if "%restore_restoreChosen%" == "q"	goto onRestoreCancelled
+if "%restore_restoreChosen%" == "Q" goto onRestoreCancelled
+
+find "[!restore_restoreChosen!]" < tmpbak\restoreList > tmpbak\restoreItem
+for /f "tokens=2" %%T in (tmpbak\restoreItem) do (
+	set restore_restoreFile=%%T 
+)
+if "%restore_restoreFile%" == "" goto restoreChoose
+setlocal disabledelayedexpansion
+ 
+echo.
+echo =======================================
 echo  EXTRACT BACKUP
 echo =======================================
-tools\zip x -y backup\TA-backup.zip -otmpbak
+tools\zip x -y backup\%restore_restoreFile% -otmpbak
 if NOT "%errorlevel%" == "0" goto onRestoreFailed
 
 echo.

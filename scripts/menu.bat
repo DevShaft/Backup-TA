@@ -5,42 +5,67 @@ REM #####################
 REM ## MENU
 REM #####################
 :showMenu
+set menu_currentIndex=1
+set menu_choices=1
 cls
 echo.
 echo  [ ------------------------------------------------------------ ]
 echo  [  Backup-TA %version% for Sony Xperia                              ]
 echo  [ ------------------------------------------------------------ ]
-echo  [  1. Backup                                                   ]
-echo  [  2. Restore                                                  ]
-echo  [  3. Restore dry-run                                          ]
-echo  [  4. Convert v4 backup                                        ]
-echo  [  5. Quit                                                     ]
+echo  [  %menu_currentIndex%. Backup                                                   ]
+
+set /a menu_currentIndex+=1 >nul
+set menu_choices=%menu_choices%%menu_currentIndex%
+
+echo  [  %menu_currentIndex%. Restore                                                  ]
+
+set /a menu_currentIndex+=1 >nul
+set menu_choices=%menu_choices%%menu_currentIndex%
+
+echo  [  %menu_currentIndex%. Restore dry-run                                          ]
+
+set /a menu_currentIndex+=1 >nul
+set menu_choices=%menu_choices%%menu_currentIndex%
+
+echo  [  %menu_currentIndex%. Convert v4 backup                                        ]
+
+set /a menu_currentIndex+=1 >nul
+set menu_choices=%menu_choices%%menu_currentIndex%
+
+echo  [  %menu_currentIndex%. Quit                                                     ]
 echo  [ ------------------------------------------------------------ ]
-choice /c:12345 /m "Please make your decision:"
-set menuChoice=%errorlevel%
-if %menuChoice% == 1 (
-	call scripts/backup.bat backupTA
-	set menuChoice=0
+
+tools\choice.com /c:%menu_choices% "Please make your decision:"
+
+set menu_decision=%errorlevel%
+set menu_currentIndex=
+set menu_choices=
+
+if %menu_decision% == 1 (
+	call scripts\backup.bat backupTA
+	set menu_decision=0
 )
-if %menuChoice% == 2 (
-	call scripts/restore.bat restoreTA
-	set menuChoice=0
+if %menu_decision% == 2 (
+	call scripts\restore.bat restoreTA
+	set menu_decision=0
 )
-if %menuChoice% == 3 (
-	call scripts/restore.bat restoreTAdry
-	set menuChoice=0
+if %menu_decision% == 3 (
+	call scripts\restore.bat restoreTAdry
+	set menu_decision=0
 )
-if %menuChoice% == 4 (
-	call scripts/convert.bat showConvertV4
-	set menuChoice=0
+if %menu_decision% == 4 (
+	call scripts\convert.bat showConvertV4
+	set menu_decision=0
 )
-if %menuChoice% == 5 (
-	set menuChoice=-1
+if %menu_decision% == 5 (
+	set menu_decision=-1
 )
 
-if %menuChoice%==0 (goto showMenu)
+if %menu_decision%==0 (goto showMenu)
 goto:eof
 
 :dispose
-set menuChoice=
+set menu_decision=
+set menu_currentIndex=
+set menu_choices=
 goto:eof

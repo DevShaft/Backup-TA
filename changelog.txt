@@ -1,3 +1,11 @@
+Backup-TA v8.4 (2013-05-23)
+==============================
+Fixed Bugs
+----------
+- Fixed bug in IMEI input.
+- Added choice.com as part of the tool instead of relying on Windows.
+
+
 Backup-TA v8.3 (2013-05-21)
 ==============================
 New Features, Improvements

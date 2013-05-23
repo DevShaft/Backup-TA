@@ -16,13 +16,14 @@ REM #####################
 :restoreTA
 echo.
 if "%restore_dryRun%" == "1" echo --- Restore dry run ---
-choice /m "Are you sure you want to restore the TA Partition?"
+tools\choice.com "Are you sure you want to restore the TA Partition?"
 if errorlevel 2 goto onRestoreCancelled
 
 echo.
 set /p restore_inputIMEI=Enter your IMEI (digits only):
 call scripts\string-util.bat strlen restore_inputIMEILen restore_inputIMEI
 if NOT "%restore_inputIMEILen%" == "15" goto onRestoreInvalidIMEI
+set restore_inputIMEILen=
 setlocal enabledelayedexpansion
 set restore_inputIMEI=!restore_inputIMEI:~0,-1!
 setlocal disabledelayedexpansion
@@ -141,7 +142,7 @@ set /p restore_backupIMEI=<tmpbak\restore_backupIMEI.txt
 verify > nul
 if NOT "%restore_partitionIMEI%" == "%restore_backupIMEI%" (
 	echo The backup appears to be from another device.
-	choice /m "Are you sure you want to restore the TA Partition?"
+	tools\choice.com "Are you sure you want to restore the TA Partition?"
 	if errorlevel 2 goto onRestoreCancelled
 ) else (
 	echo OK

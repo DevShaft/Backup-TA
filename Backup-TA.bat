@@ -1,5 +1,5 @@
 @echo off
-set version=v8.3
+set version=v8.4
 cd %~dp0
 call scripts\license.bat showLicense
 call:initialize

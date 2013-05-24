@@ -35,7 +35,7 @@ set menu_choices=%menu_choices%%menu_currentIndex%
 echo  [  %menu_currentIndex%. Quit                                                     ]
 echo  [ ------------------------------------------------------------ ]
 
-tools\choice.exe /c:%menu_choices% /m "Please make your decision:"
+choice /c:%menu_choices% /m "Please make your decision:"
 
 set menu_decision=%errorlevel%
 set menu_currentIndex=

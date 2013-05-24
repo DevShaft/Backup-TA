@@ -16,7 +16,7 @@ REM #####################
 :restoreTA
 echo.
 if "%restore_dryRun%" == "1" echo --- Restore dry run ---
-tools\choice.exe /m "Are you sure you want to restore the TA Partition?"
+choice /m "Are you sure you want to restore the TA Partition?"
 if errorlevel 2 goto onRestoreCancelled
 
 echo.
@@ -142,7 +142,7 @@ set /p restore_backupIMEI=<tmpbak\restore_backupIMEI.txt
 verify > nul
 if NOT "%restore_partitionIMEI%" == "%restore_backupIMEI%" (
 	echo The backup appears to be from another device.
-	tools\choice.exe /m "Are you sure you want to restore the TA Partition?"
+	choice /m "Are you sure you want to restore the TA Partition?"
 	if errorlevel 2 goto onRestoreCancelled
 ) else (
 	echo OK

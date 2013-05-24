@@ -1,6 +1,7 @@
 @echo off
 set version=v8.4
 cd %~dp0
+set PATH=%PATH%;%~dp0tools
 call scripts\license.bat showLicense
 call:initialize
 call scripts\busybox.bat pushBusyBox

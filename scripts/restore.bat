@@ -33,6 +33,9 @@ set restore_inputIMEI=!restore_inputIMEI:~0,-1!
 setlocal disabledelayedexpansion
 verify > nul
 
+tools\adb get-serialno>tmpbak\restore_serialno
+set /p restore_serialno=<tmpbak\restore_serialno
+
 echo.
 echo =======================================
 echo  CHOOSE BACKUP TO RESTORE
@@ -135,19 +138,28 @@ if NOT "%restore_savedBackupMD5%" == "%restore_pushedBackupMD5%" (
 
 echo.
 echo =======================================
-echo  IMEI CHECK
+echo  IMEI / SERIAL CHECK
 echo =======================================
 tools\adb shell su -c "%bb% cat %partition% | %bb% grep -m 1 -o %restore_inputIMEI%">tmpbak\restore_partitionIMEI.txt
 if NOT "%errorlevel%" == "0" goto onRestoreFailed
 tools\adb shell su -c "%bb% cat /sdcard/restoreTA.img | %bb% grep -m 1 -o %restore_inputIMEI%">tmpbak\restore_backupIMEI.txt
 if NOT "%errorlevel%" == "0" goto onRestoreFailed
+tools\adb shell su -c "%bb% cat /sdcard/restoreTA.img | %bb% grep -m 1 -o %restore_serialno%">tmpbak\restore_backupSerial.txt
+if NOT "%errorlevel%" == "0" goto onRestoreFailed
 set /p restore_partitionIMEI=<tmpbak\restore_partitionIMEI.txt
 set /p restore_backupIMEI=<tmpbak\restore_backupIMEI.txt
+set /p restore_backupSerial=<tmpbak\restore_backupSerial.txt
 verify > nul
 if NOT "%restore_partitionIMEI%" == "%restore_backupIMEI%" (
-	echo The backup appears to be from another device.
-	choice /m "Are you sure you want to restore the TA Partition?"
-	if errorlevel 2 goto onRestoreCancelled
+	goto otherDevice
+) else if NOT "%restore_serialno%" == "%restore_backupSerial%" (
+	goto otherDevice
+)
+echo OK
+:otherDevice
+echo The backup appears to be from another device.
+%choice% /c:yn /m "Are you sure you want to restore the TA Partition?"
+if errorlevel 2 goto onRestoreCancelled
 ) else (
 	echo OK
 )

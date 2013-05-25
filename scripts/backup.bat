@@ -14,16 +14,16 @@ echo.
 echo =======================================
 echo  BACKUP TA PARTITION
 echo =======================================
-tools\adb shell su -c "%bb% md5sum %partition% | %bb% grep -o '^[^ ]*'">tmpbak\backup_currentPartitionMD5.txt
+tools\adb shell su -c "%bb% md5sum %partition% | %bb% grep -o '^[^ ]*'">tmpbak\backup_currentPartitionMD5
 tools\adb shell su -c "%bb% dd if=%partition% of=/sdcard/backupTA.img"
 
 echo.
 echo =======================================
 echo  INTEGRITY CHECK
 echo =======================================
-tools\adb shell su -c "%bb% md5sum /sdcard/backupTA.img | %bb% grep -o '^[^ ]*'">tmpbak\backup_backupMD5.txt
-set /p backup_currentPartitionMD5=<tmpbak\backup_currentPartitionMD5.txt
-set /p backup_backupMD5=<tmpbak\backup_backupMD5.txt
+tools\adb shell su -c "%bb% md5sum /sdcard/backupTA.img | %bb% grep -o '^[^ ]*'">tmpbak\backup_backupMD5
+set /p backup_currentPartitionMD5=<tmpbak\backup_currentPartitionMD5
+set /p backup_backupMD5=<tmpbak\backup_backupMD5
 verify > nul
 if NOT "%backup_currentPartitionMD5%" == "%backup_backupMD5%" (
 	echo FAILED
@@ -43,9 +43,9 @@ echo.
 echo =======================================
 echo  INTEGRITY CHECK
 echo =======================================
-tools\md5 -l -n tmpbak\TA.img>tmpbak\backup_backupPulledMD5.txt
+tools\md5 -l -n tmpbak\TA.img>tmpbak\backup_backupPulledMD5
 if NOT "%errorlevel%" == "0" goto onBackupFailed
-set /p backup_backupPulledMD5=<tmpbak\backup_backupPulledMD5.txt
+set /p backup_backupPulledMD5=<tmpbak\backup_backupPulledMD5
 verify > nul
 if NOT "%backup_currentPartitionMD5%" == "%backup_backupPulledMD5%" (
 	echo FAILED

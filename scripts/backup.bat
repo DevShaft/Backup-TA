@@ -6,10 +6,8 @@ REM ## BACKUP
 REM #####################
 :backupTA
 echo.
-
 if NOT exist backup mkdir backup > nul 2>&1
 call scripts\adb.bat wakeDevice
-
 echo.
 echo =======================================
 echo  BACKUP TA PARTITION

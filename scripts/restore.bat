@@ -15,9 +15,7 @@ REM ## RESTORE
 REM #####################
 :restoreTA
 echo.
-
 call scripts\adb.bat wakeDevice
-
 echo.
 if "%restore_dryRun%" == "1" echo --- Restore dry run ---
 %choice% /c:yn /m "Are you sure you want to restore the TA Partition?"

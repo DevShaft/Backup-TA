@@ -17,9 +17,7 @@ REM ## INITIALIZE
 REM #####################
 :initialize
 cls
-set /p "=Waiting for device..." < nul
-tools\adb wait-for-device > nul
-echo OK
+call scripts\adb.bat wakeDevice
 set partition=/dev/block/mmcblk0p1
 if NOT exist tmpbak mkdir tmpbak > nul 2>&1
 goto:eof

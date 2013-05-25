@@ -8,7 +8,7 @@ New Features, Improvements
 Fixed Bugs
 ----------
 - Fixed compatibility bug with 64bits Windows version. Thanks to wawyed@xda for advice in the solution.
-- Added choice.com as part of the tool instead of relying on Windows.
+- Added choice32.exe and choice64.exe as part of the tool instead of relying on Windows.
 
 
 Backup-TA v8.4 (2013-05-23)

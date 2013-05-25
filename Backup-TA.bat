@@ -1,7 +1,11 @@
 @echo off
-set version=v8.4
+set version=v8.5
+if %PROCESSOR_ARCHITECTURE% == x86 (
+	set choice=tools\choice32.exe
+) else (
+	set choice=tools\choice64.exe
+)
 cd %~dp0
-set PATH=%PATH%;%~dp0tools
 call scripts\license.bat showLicense
 call:initialize
 call scripts\busybox.bat pushBusyBox
@@ -13,9 +17,7 @@ REM ## INITIALIZE
 REM #####################
 :initialize
 cls
-set /p "=Waiting for device..." < nul
-tools\adb wait-for-device > nul
-echo OK
+call scripts\adb.bat wakeDevice
 set partition=/dev/block/mmcblk0p1
 if NOT exist tmpbak mkdir tmpbak > nul 2>&1
 goto:eof

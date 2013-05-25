@@ -16,7 +16,7 @@ REM #####################
 :restoreTA
 echo.
 if "%restore_dryRun%" == "1" echo --- Restore dry run ---
-choice /m "Are you sure you want to restore the TA Partition?"
+%choice% /c:yn /m "Are you sure you want to restore the TA Partition?"
 if errorlevel 2 goto onRestoreCancelled
 
 echo.

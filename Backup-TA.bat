@@ -1,7 +1,11 @@
 @echo off
 set version=v8.4
+if %PROCESSOR_ARCHITECTURE% == x86 (
+	set choice=tools\choice32.exe
+) else (
+	set choice=tools\choice64.exe
+)
 cd %~dp0
-set PATH=%PATH%;%~dp0tools
 call scripts\license.bat showLicense
 call:initialize
 call scripts\busybox.bat pushBusyBox

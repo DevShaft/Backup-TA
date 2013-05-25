@@ -24,7 +24,9 @@ if "%restore_dryRun%" == "1" echo --- Restore dry run ---
 if errorlevel 2 goto onRestoreCancelled
 
 echo.
+set restore_inputIMEI=
 set /p restore_inputIMEI=Enter your IMEI (digits only):
+set restore_inputIMEILen=
 call scripts\string-util.bat strlen restore_inputIMEILen restore_inputIMEI
 if NOT "%restore_inputIMEILen%" == "15" goto onRestoreInvalidIMEI
 set restore_inputIMEILen=
@@ -305,6 +307,7 @@ set restore_backupIMEI=
 set restore_restoredMD5=
 set restore_revertedMD5=
 set restore_inputIMEI=
+set restore_inputIMEILen=
 set restore_backupSerial=
 
 tools\adb shell rm /sdcard/restoreTA.img > nul 2>&1

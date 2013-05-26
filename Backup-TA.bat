@@ -1,5 +1,5 @@
 @echo off
-set version=v8.5
+set version=v8.6
 if %PROCESSOR_ARCHITECTURE% == x86 (
 	set choice=tools\choice32.exe
 ) else (

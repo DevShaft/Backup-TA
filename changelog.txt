@@ -1,3 +1,9 @@
+Backup-TA v8.6 (2013-05-26)
+==============================
+Fixed Bugs
+----------
+- Fixed bug in IMEI/Serial check. Was always executing the code as if the device was invalid.
+
 Backup-TA v8.5 (2013-05-25)
 ==============================
 New Features, Improvements

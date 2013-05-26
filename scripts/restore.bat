@@ -156,11 +156,14 @@ if NOT "%restore_partitionIMEI%" == "%restore_backupIMEI%" (
 	goto otherDevice
 )
 echo OK
+goto validDevice
+
 :otherDevice
 echo The backup appears to be from another device.
 %choice% /c:yn /m "Are you sure you want to restore the TA Partition?"
 if errorlevel 2 goto onRestoreCancelled
 
+:validDevice
 echo.
 echo =======================================
 echo  RESTORE BACKUP

@@ -86,9 +86,10 @@ REM #####################
 :exit
 call:dispose
 echo.
-if "%~1" == "1" echo *** Backup succesful. ***
+if "%~1" == "1" echo *** Backup successful. ***
 if "%~1" == "2" echo *** Backup cancelled. ***
-if "%~1" == "3" echo *** Backup unsuccesful. ***
+if "%~1" == "3" echo *** Backup unsuccessful. ***
+echo.
 pause
 goto:eof
 

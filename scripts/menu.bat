@@ -27,6 +27,11 @@ echo  [  %menu_currentIndex%. Restore dry-run                                   
 set /a menu_currentIndex+=1 >nul
 set menu_choices=%menu_choices%%menu_currentIndex%
 
+echo  [  %menu_currentIndex%. Device compatibility check                               ]
+
+set /a menu_currentIndex+=1 >nul
+set menu_choices=%menu_choices%%menu_currentIndex%
+
 echo  [  %menu_currentIndex%. Convert v4 backup                                        ]
 
 set /a menu_currentIndex+=1 >nul
@@ -54,10 +59,14 @@ if %menu_decision% == 3 (
 	set menu_decision=0
 )
 if %menu_decision% == 4 (
-	call scripts\convert.bat showConvertV4
+	call scripts\find.bat findTA
 	set menu_decision=0
 )
 if %menu_decision% == 5 (
+	call scripts\convert.bat showConvertV4
+	set menu_decision=0
+)
+if %menu_decision% == 6 (
 	set menu_decision=-1
 )
 

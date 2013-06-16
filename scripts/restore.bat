@@ -23,7 +23,7 @@ if errorlevel 2 goto onRestoreCancelled
 
 echo.
 set restore_inputIMEI=
-set /p restore_inputIMEI=Enter your IMEI (digits only):
+set /p restore_inputIMEI=Enter your IMEI (digits only): 
 set restore_inputIMEILen=
 call scripts\string-util.bat strlen restore_inputIMEILen restore_inputIMEI
 if NOT "%restore_inputIMEILen%" == "15" goto onRestoreInvalidIMEI
@@ -283,14 +283,15 @@ if "%~1" == "1" call:dispose
 if "%~1" == "3" call:dispose
 echo.
 
-if "%~1" == "1" echo *** Restore succesful. ***
+if "%~1" == "1" echo *** Restore successful. ***
 if "%~1" == "2" echo *** Restore cancelled. ***
-if "%~1" == "3" echo *** Restore unsuccesful. ***
+if "%~1" == "3" echo *** Restore unsuccessful. ***
 
 if "%~1" == "4" echo *** DO NOT SHUTDOWN OR REBOOT DEVICE!!! ***
 if "%~1" == "4" echo *** Reverting restore has failed! Contact DevShaft @XDA-forums for guidance. ***
 
 if "%~1" == "5" echo *** Revert successful. Try to restore again. ***
+echo.
 pause
 goto:eof
 

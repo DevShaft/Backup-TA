@@ -18,7 +18,7 @@ echo.
 call scripts\adb.bat wakeDevice
 echo.
 if "%restore_dryRun%" == "1" echo --- Restore dry run ---
-%choice% /c:yn /m "Are you sure you want to restore the TA Partition?"
+%choice% /c:yn %choiceTextParam% "Are you sure you want to restore the TA Partition?"
 if errorlevel 2 goto onRestoreCancelled
 
 echo.
@@ -56,7 +56,7 @@ set /p restore_restoreChosen=Please make your decision:
 if "%restore_restoreChosen%" == "q"	goto onRestoreCancelled
 if "%restore_restoreChosen%" == "Q" goto onRestoreCancelled
 
-find "[!restore_restoreChosen!]" < tmpbak\restoreList > tmpbak\restoreItem
+tools\find "[!restore_restoreChosen!]" < tmpbak\restoreList > tmpbak\restoreItem
 for /f "tokens=2" %%T in (tmpbak\restoreItem) do (
 	set restore_restoreFile=%%T 
 )
@@ -160,7 +160,7 @@ goto validDevice
 
 :otherDevice
 echo The backup appears to be from another device.
-%choice% /c:yn /m "Are you sure you want to restore the TA Partition?"
+%choice% /c:yn %choiceTextParam% "Are you sure you want to restore the TA Partition?"
 if errorlevel 2 goto onRestoreCancelled
 
 :validDevice

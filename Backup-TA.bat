@@ -1,9 +1,11 @@
 @echo off
-set version=v8.6
+set version=v8.7
 if %PROCESSOR_ARCHITECTURE% == x86 (
 	set choice=tools\choice32.exe
+	set choiceTextParam=
 ) else (
 	set choice=tools\choice64.exe
+	set choiceTextParam=/m
 )
 cd %~dp0
 call scripts\license.bat showLicense
@@ -31,6 +33,8 @@ echo =======================================
 echo  CLEAN UP
 echo =======================================
 set partition=
+set choiceTextParam=
+set choice=
 
 call scripts\menu.bat dispose
 call scripts\backup.bat dispose

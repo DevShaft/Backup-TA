@@ -1,3 +1,11 @@
+Backup-TA v8.7 (2013-06-16)
+==============================
+Fixed Bugs
+----------
+- Bundled Windows find command.
+- Replaced 32bits choice.exe from Windows 7 to a prior Windows XP version.
+
+
 Backup-TA v8.6 (2013-05-26)
 ==============================
 Fixed Bugs

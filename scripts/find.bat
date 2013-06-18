@@ -17,9 +17,8 @@ setlocal enabledelayedexpansion
 set find_inputIMEI=!find_inputIMEI:~0,-1!
 setlocal disabledelayedexpansion
 verify > nul
-set find_inputSerial=
-set /p find_inputSerial=Enter your serial: 
-verify > nul
+tools\adb get-serialno>tmpbak\find_serialno
+set /p find_serialno=<tmpbak\find_serialno
 
 echo.
 echo =======================================
@@ -39,13 +38,31 @@ pause
 goto:eof
 
 :inspectPartition
-set /p "=Inspecting %1..." < nul
+echo --- %1 ---
+set /p "=Searching for IMEI..." < nul
 tools\adb shell su -c "cat /dev/block/%1 | grep -s -m 1 -c '%find_inputIMEI%'">tmpbak\find_matchIMEI
 set /p find_matchIMEI=<tmpbak\find_matchIMEI
-tools\adb shell su -c "cat /dev/block/%1 | grep -s -m 1 -c '%find_inputSerial%'">tmpbak\find_matchSerial
+if "%find_matchIMEI%" == "1" (
+	echo +
+) else (
+	echo -
+)
+set /p "=Searching for Serial No..." < nul
+tools\adb shell su -c "cat /dev/block/%1 | grep -s -m 1 -c '%find_serialno%'">tmpbak\find_matchSerial
 set /p find_matchSerial=<tmpbak\find_matchSerial
+if "%find_matchSerial%" == "1" (
+	echo +
+) else (
+	echo -
+)
+set /p "=Searching for Marlin Certificate..." < nul
 tools\adb shell su -c "cat /dev/block/%1 | grep -s -m 1 -c -i 'marlin:datacertification'">tmpbak\find_matchMarlin
 set /p find_matchMarlin=<tmpbak\find_matchMarlin
+if "%find_matchMarlin%" == "1" (
+	echo +
+) else (
+	echo -
+)
 
 set partitionDoesMatch=0
 
@@ -56,13 +73,13 @@ if "%find_matchIMEI%" == "1" (
 				set find_taPartitionName=%1
 			) else (
 				echo.
-				goto onFindUnknown
+				goto onFindMultiple
 			)
 			set partitionDoesMatch=1
 		)
 	)
 )
-echo done
+echo.
 goto:eof
 
 REM #####################
@@ -88,6 +105,13 @@ call:exit 3
 goto:eof
 
 REM #####################
+REM ## FIND MULTIPLE
+REM #####################
+:onFindMultiple
+call:exit 5
+goto:eof
+
+REM #####################
 REM ## FIND UNKNOWN
 REM #####################
 :onFindUnknown
@@ -107,15 +131,19 @@ REM #####################
 :exit
 set find_taPartitionNameLocal=%find_taPartitionName%
 call:dispose
-echo.
 if "%~1" == "1" echo *** Your device appears to be compatible. ***
 if "%~1" == "2" echo *** Operation cancelled. ***
 if "%~1" == "3" (
-	echo *** The TA partition of your device appears to be %find_taPartitionNameLocal%. *** 
-	echo *** This is a different partition than the one compatible with this tool. ***
-	echo *** Contact DevShaft @XDA-forums for the possibility to make the tool compatible. *** 
+	echo *** The TA partition on your device appears to be located at %find_taPartitionNameLocal%. *** 
+	echo *** This is a different location than the location compatible for this tool. ***
+	echo *** Contact DevShaft @XDA-forums for support. *** 
 )
-if "%~1" == "4" echo *** The TA partition for your device can not be determined. ***
+if "%~1" == "4" echo *** No compatible TA partition found on your device. ***
+if "%~1" == "5" (
+	echo *** More than one partition match the TA partition search criteria. ***
+	echo *** Therefore it is not possible to determine which one or ones to use. ***
+	echo *** Contact DevShaft @XDA-forums for support. *** 
+)
 echo.
 set find_taPartitionNameLocal=
 pause
@@ -129,7 +157,7 @@ set find_taPartitionName=
 set find_inputIMEI=
 set find_matchSerial=
 set find_inputIMEILen=
-set find_inputSerial=
+set find_serialno=
 set find_matchIMEI=
 set find_matchMarlin=
 goto:eof

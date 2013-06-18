@@ -17,11 +17,11 @@ REM #####################
 echo.
 call scripts\adb.bat wakeDevice
 echo.
-if "%restore_dryRun%" == "1" echo --- Restore dry run ---
-%choice% /c:yn %choiceTextParam% "Are you sure you want to restore the TA Partition?"
-if errorlevel 2 goto onRestoreCancelled
+if "%restore_dryRun%" == "1" (
+	echo --- Restore dry run ---
+	echo.
+)
 
-echo.
 set restore_inputIMEI=
 set /p restore_inputIMEI=Enter your IMEI (digits only): 
 set restore_inputIMEILen=
@@ -62,6 +62,10 @@ for /f "tokens=2" %%T in (tmpbak\restoreItem) do (
 )
 if "%restore_restoreFile%" == "" goto restoreChoose
 setlocal disabledelayedexpansion
+ 
+echo.
+%choice% /c:yn %choiceTextParam% "Are you sure you want to restore the TA Partition?"
+if errorlevel 2 goto onRestoreCancelled
  
 echo.
 echo =======================================

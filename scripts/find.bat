@@ -24,7 +24,7 @@ echo.
 echo =======================================
 echo  INSPECTING PARTITIONS
 echo =======================================
-tools\adb shell su -c "cat /proc/partitions | grep -o '\b[0-9]\{1,4\} mmc.*' | grep -o 'mmc.*'">tmpbak\find_potentialPartitions
+tools\adb shell su -c "%bb% cat /proc/partitions | %bb% grep -o '\b[0-9]\{1,4\} mmc.*' | %bb% grep -o 'mmc.*'">tmpbak\find_potentialPartitions
 for /F "tokens=*" %%A in (tmpbak\find_potentialPartitions) do call:inspectPartition %%A
 if "%find_taPartitionName%" == "mmcblk0p1" (
 	goto onFindSuccess
@@ -40,7 +40,7 @@ goto:eof
 :inspectPartition
 echo --- %1 ---
 set /p "=Searching for IMEI..." < nul
-tools\adb shell su -c "cat /dev/block/%1 | grep -s -m 1 -c '%find_inputIMEI%'">tmpbak\find_matchIMEI
+tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c '%find_inputIMEI%'">tmpbak\find_matchIMEI
 set /p find_matchIMEI=<tmpbak\find_matchIMEI
 if "%find_matchIMEI%" == "1" (
 	echo +
@@ -48,7 +48,7 @@ if "%find_matchIMEI%" == "1" (
 	echo -
 )
 set /p "=Searching for Serial No..." < nul
-tools\adb shell su -c "cat /dev/block/%1 | grep -s -m 1 -c '%find_serialno%'">tmpbak\find_matchSerial
+tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c '%find_serialno%'">tmpbak\find_matchSerial
 set /p find_matchSerial=<tmpbak\find_matchSerial
 if "%find_matchSerial%" == "1" (
 	echo +
@@ -56,7 +56,7 @@ if "%find_matchSerial%" == "1" (
 	echo -
 )
 set /p "=Searching for Marlin Certificate..." < nul
-tools\adb shell su -c "cat /dev/block/%1 | grep -s -m 1 -c -i 'marlin:datacertification'">tmpbak\find_matchMarlin
+tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c -i 'marlin:datacertification'">tmpbak\find_matchMarlin
 set /p find_matchMarlin=<tmpbak\find_matchMarlin
 if "%find_matchMarlin%" == "1" (
 	echo +

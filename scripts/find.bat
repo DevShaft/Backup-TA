@@ -24,7 +24,7 @@ echo.
 echo =======================================
 echo  INSPECTING PARTITIONS
 echo =======================================
-tools\adb shell su -c "%bb% cat /proc/partitions | %bb% grep -o '\b[0-9]\{1,4\} mmc.*' | %bb% grep -o 'mmc.*'">tmpbak\find_potentialPartitions
+tools\adb shell su -c "%bb% cat /proc/partitions | %bb% grep -o ' [0-9]\{1,4\} mmc.*' | %bb% grep -o 'mmc.*'">tmpbak\find_potentialPartitions
 for /F "tokens=*" %%A in (tmpbak\find_potentialPartitions) do call:inspectPartition %%A
 if "%find_taPartitionName%" == "mmcblk0p1" (
 	goto onFindSuccess

@@ -73,6 +73,11 @@ echo  EXTRACT BACKUP
 echo =======================================
 tools\zip x -y backup\%restore_restoreFile% -otmpbak
 if NOT "%errorlevel%" == "0" goto onRestoreFailed
+if exist tmpbak\TA.blk (
+	set /p partition=<tmpbak\TA.blk
+) else (
+	set partition=/dev/block/mmcblk0p1
+)
 
 echo.
 echo =======================================
@@ -283,8 +288,7 @@ REM #####################
 REM ## EXIT RESTORE
 REM #####################
 :exit
-if "%~1" == "1" call:dispose
-if "%~1" == "3" call:dispose
+if NOT "%~1" == "5" call:dispose
 echo.
 
 if "%~1" == "1" echo *** Restore successful. ***
@@ -315,6 +319,7 @@ set restore_revertedMD5=
 set restore_inputIMEI=
 set restore_inputIMEILen=
 set restore_backupSerial=
+del /q /s tmpbak\*.* > nul 2>&1
 
 tools\adb shell rm /sdcard/restoreTA.img > nul 2>&1
 tools\adb shell rm /sdcard/revertTA.img > nul 2>&1

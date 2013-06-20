@@ -1,5 +1,5 @@
 @echo off
-set version=v8.9
+set version=v9.0b1
 if %PROCESSOR_ARCHITECTURE% == x86 (
 	set choice=tools\choice32.exe
 	set choiceTextParam=
@@ -20,7 +20,7 @@ REM #####################
 :initialize
 cls
 call scripts\adb.bat wakeDevice
-set partition=/dev/block/mmcblk0p1
+set partition=/dev/block/platform/msm_sdcc.1/by_name/TA
 if NOT exist tmpbak mkdir tmpbak > nul 2>&1
 goto:eof
 
@@ -39,6 +39,7 @@ set choice=
 call scripts\menu.bat dispose
 call scripts\backup.bat dispose
 call scripts\restore.bat dispose
+call scripts\find.bat dispose
 
 del /q /s tmpbak\*.*
 if exist tmpbak rmdir tmpbak

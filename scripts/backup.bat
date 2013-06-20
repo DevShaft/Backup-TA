@@ -4,10 +4,130 @@ goto:eof
 REM #####################
 REM ## BACKUP
 REM #####################
+:inspectPartition
+if "%backup_taPartitionName%" == "-1" goto:eof
+	echo --- %1 ---
+	set /p "=Searching for IMEI..." < nul
+	tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c '%backup_inputIMEI%'">tmpbak\backup_matchIMEI
+	set /p backup_matchIMEI=<tmpbak\backup_matchIMEI
+	if "%backup_matchIMEI%" == "1" (
+		echo +
+	) else (
+		echo -
+	)
+	set /p "=Searching for Serial No..." < nul
+	tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c '%backup_serialno%'">tmpbak\backup_matchSerial
+	set /p backup_matchSerial=<tmpbak\backup_matchSerial
+	if "%backup_matchSerial%" == "1" (
+		echo +
+	) else (
+		echo -
+	)
+	set /p "=Searching for Marlin Certificate..." < nul
+	tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c -i 'marlin:datacertification'">tmpbak\backup_matchMarlin
+	set /p backup_matchMarlin=<tmpbak\backup_matchMarlin
+	if "%backup_matchMarlin%" == "1" (
+		echo +
+	) else (
+		echo -
+	)
+
+	if "%backup_matchIMEI%" == "1" (
+		if "%backup_matchSerial%" == "1" (
+			if "%backup_matchMarlin%" == "1" (
+				if "%backup_taPartitionName%" == "" (
+					set backup_taPartitionName=%1
+				) else (
+					set backup_taPartitionName=-1
+					
+				)
+			)
+		)
+	)
+	echo.
+	goto:eof
+)
 :backupTA
 echo.
 if NOT exist backup mkdir backup > nul 2>&1
 call scripts\adb.bat wakeDevice
+echo.
+echo =======================================
+echo  FIND TA PARTITION
+echo =======================================
+tools\adb shell su -c "ls -l %partition% | %bb% grep -o 'TA ->' | %bb% grep -o 'TA'">tmpbak\backup_TAByName
+set /p backup_TAByName=<tmpbak\backup_TAByName
+
+if "%backup_TAByName%" == "TA" (
+
+	tools\adb shell su -c "ls -l %partition% | %bb% grep -o '/dev/block/.*'">tmpbak\backup_defaultTA
+	
+	goto continue2
+) else (
+	echo Partition not found!
+	echo.
+	%choice% /c:yn %choiceTextParam% "Do you want to perform an extensive search for the TA?"
+	if errorlevel 2 goto onBackupCancelled
+	
+	echo.
+	echo =======================================
+	echo  EXTENSIVE SEARCH FOR TA
+	echo =======================================
+	set backup_taPartitionName=
+	set backup_inputIMEI=
+	set backup_inputIMEILen=
+	
+	set /p backup_inputIMEI=Enter your IMEI [digits only]: 
+	
+	call scripts\string-util.bat strlen backup_inputIMEILen backup_inputIMEI
+	goto continue3
+	
+)
+:continue3
+if NOT "%backup_inputIMEILen%" == "15" goto onBackupInvalidIMEI
+	set backup_inputIMEILen=
+	setlocal enabledelayedexpansion
+	set backup_inputIMEI=!backup_inputIMEI:~0,-1!
+	setlocal disabledelayedexpansion
+	verify > nul
+	tools\adb get-serialno>tmpbak\backup_serialno
+	set /p backup_serialno=<tmpbak\backup_serialno
+	
+	echo.
+	echo =======================================
+	echo  INSPECTING PARTITIONS
+	echo =======================================
+	
+	
+	tools\adb shell su -c "%bb% cat /proc/partitions | %bb% grep -o ' [0-9]\{1,4\} mmc.*' | %bb% grep -o 'mmc.*'">tmpbak\backup_potentialPartitions
+	for /F "tokens=*" %%A in (tmpbak\backup_potentialPartitions) do call:inspectPartition %%A
+	
+	goto continue
+
+goto continue2
+:continue
+if NOT "%backup_taPartitionName%" == "" (
+		if NOT "%backup_taPartitionName%" == "-1" (
+			echo Partition found!
+			set partition=/dev/block/%backup_taPartitionName%
+			goto continue3
+		) else (
+				echo *** More than one partition match the TA partition search criteria. ***
+				echo *** Therefore it is not possible to determine which one or ones to use. ***
+				echo *** Contact DevShaft @XDA-forums for support. ***
+			goto onBackupCancelled
+		)
+	) else (
+		echo *** No compatible TA partition found on your device. ***
+		goto onBackupCancelled
+	)
+
+
+:continue2
+set /p backup_defaultTA=<tmpbak\backup_defaultTA
+	set partition=%backup_defaultTA%
+	echo Partition found!
+:continue3
 echo.
 echo =======================================
 echo  BACKUP TA PARTITION
@@ -56,14 +176,23 @@ echo.
 echo =======================================
 echo  PACKAGE BACKUP
 echo =======================================
+echo %partition%>tmpbak\TA.blk
 echo %backup_backupPulledMD5%>tmpbak\TA.md5
 cd tmpbak
 call ..\scripts\date-util.bat getDateTime backup_timestamp
-..\tools\zip a ..\backup\TA-backup-%backup_timestamp%.zip TA.img TA.md5
+..\tools\zip a ..\backup\TA-backup-%backup_timestamp%.zip TA.img TA.md5 TA.blk
 if NOT "%errorlevel%" == "0" goto onBackupFailed
 cd..
 
 call:exit 1
+goto:eof
+
+REM #####################
+REM ## BACKUP INVALID IMEI
+REM #####################
+:onBackupInvalidIMEI
+echo Invalid IMEI provided.
+goto onBackupCancelled
 goto:eof
 
 REM #####################

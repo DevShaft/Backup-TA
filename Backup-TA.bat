@@ -20,7 +20,7 @@ REM #####################
 :initialize
 cls
 call scripts\adb.bat wakeDevice
-set partition=/dev/block/platform/msm_sdcc.1/by_name/TA
+set partition=/dev/block/platform/msm_sdcc.1/by-name/TA
 if NOT exist tmpbak mkdir tmpbak > nul 2>&1
 goto:eof
 

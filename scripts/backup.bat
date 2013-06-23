@@ -7,14 +7,6 @@ REM #####################
 :inspectPartition
 if "%backup_taPartitionName%" == "-1" goto:eof
 	echo --- %1 ---
-	set /p "=Searching for IMEI..." < nul
-	tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c '%backup_inputIMEI%'">tmpbak\backup_matchIMEI
-	set /p backup_matchIMEI=<tmpbak\backup_matchIMEI
-	if "%backup_matchIMEI%" == "1" (
-		echo +
-	) else (
-		echo -
-	)
 	set /p "=Searching for Serial No..." < nul
 	tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c '%backup_serialno%'">tmpbak\backup_matchSerial
 	set /p backup_matchSerial=<tmpbak\backup_matchSerial
@@ -32,15 +24,13 @@ if "%backup_taPartitionName%" == "-1" goto:eof
 		echo -
 	)
 
-	if "%backup_matchIMEI%" == "1" (
-		if "%backup_matchSerial%" == "1" (
-			if "%backup_matchMarlin%" == "1" (
-				if "%backup_taPartitionName%" == "" (
-					set backup_taPartitionName=%1
-				) else (
-					set backup_taPartitionName=-1
-					
-				)
+	if "%backup_matchSerial%" == "1" (
+		if "%backup_matchMarlin%" == "1" (
+			if "%backup_taPartitionName%" == "" (
+				set backup_taPartitionName=%1
+			) else (
+				set backup_taPartitionName=-1
+				
 			)
 		)
 	)
@@ -74,22 +64,10 @@ if "%backup_TAByName%" == "TA" (
 	echo  EXTENSIVE SEARCH FOR TA
 	echo =======================================
 	set backup_taPartitionName=
-	set backup_inputIMEI=
-	set backup_inputIMEILen=
-	
-	set /p backup_inputIMEI=Enter your IMEI [digits only]: 
-	
-	call scripts\string-util.bat strlen backup_inputIMEILen backup_inputIMEI
 	goto continue3
 	
 )
 :continue3
-if NOT "%backup_inputIMEILen%" == "15" goto onBackupInvalidIMEI
-	set backup_inputIMEILen=
-	setlocal enabledelayedexpansion
-	set backup_inputIMEI=!backup_inputIMEI:~0,-1!
-	setlocal disabledelayedexpansion
-	verify > nul
 	tools\adb get-serialno>tmpbak\backup_serialno
 	set /p backup_serialno=<tmpbak\backup_serialno
 	
@@ -185,14 +163,6 @@ if NOT "%errorlevel%" == "0" goto onBackupFailed
 cd..
 
 call:exit 1
-goto:eof
-
-REM #####################
-REM ## BACKUP INVALID IMEI
-REM #####################
-:onBackupInvalidIMEI
-echo Invalid IMEI provided.
-goto onBackupCancelled
 goto:eof
 
 REM #####################

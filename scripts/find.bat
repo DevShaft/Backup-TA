@@ -7,16 +7,6 @@ REM #####################
 :findTA
 echo.
 set find_taPartitionName=
-set find_inputIMEI=
-set /p find_inputIMEI=Enter your IMEI (digits only): 
-set find_inputIMEILen=
-call scripts\string-util.bat strlen find_inputIMEILen find_inputIMEI
-if NOT "%find_inputIMEILen%" == "15" goto onFindInvalidIMEI
-set find_inputIMEILen=
-setlocal enabledelayedexpansion
-set find_inputIMEI=!find_inputIMEI:~0,-1!
-setlocal disabledelayedexpansion
-verify > nul
 tools\adb get-serialno>tmpbak\find_serialno
 set /p find_serialno=<tmpbak\find_serialno
 
@@ -41,14 +31,6 @@ goto:eof
 
 :inspectPartition
 echo --- %1 ---
-set /p "=Searching for IMEI..." < nul
-tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c '%find_inputIMEI%'">tmpbak\find_matchIMEI
-set /p find_matchIMEI=<tmpbak\find_matchIMEI
-if "%find_matchIMEI%" == "1" (
-	echo +
-) else (
-	echo -
-)
 set /p "=Searching for Serial No..." < nul
 tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c '%find_serialno%'">tmpbak\find_matchSerial
 set /p find_matchSerial=<tmpbak\find_matchSerial
@@ -66,27 +48,17 @@ if "%find_matchMarlin%" == "1" (
 	echo -
 )
 
-if "%find_matchIMEI%" == "1" (
-	if "%find_matchSerial%" == "1" (
-		if "%find_matchMarlin%" == "1" (
-			if "%find_taPartitionName%" == "" (
-				set find_taPartitionName=%1
-			) else (
-				echo.
-				goto onFindMultiple
-			)
+if "%find_matchSerial%" == "1" (
+	if "%find_matchMarlin%" == "1" (
+		if "%find_taPartitionName%" == "" (
+			set find_taPartitionName=%1
+		) else (
+			echo.
+			goto onFindMultiple
 		)
 	)
 )
 echo.
-goto:eof
-
-REM #####################
-REM ## FIND INVALID IMEI
-REM #####################
-:onFindInvalidIMEI
-echo Invalid IMEI provided.
-goto onFindCancelled
 goto:eof
 
 REM #####################
@@ -153,10 +125,7 @@ REM ## DISPOSE FIND
 REM #####################
 :dispose
 set find_taPartitionName=
-set find_inputIMEI=
 set find_matchSerial=
-set find_inputIMEILen=
 set find_serialno=
-set find_matchIMEI=
 set find_matchMarlin=
 goto:eof

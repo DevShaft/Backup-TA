@@ -14,14 +14,17 @@ call scripts\busybox.bat pushBusyBox
 if NOT exist tmpbak mkdir tmpbak > nul 2>&1
 tools\adb shell ls /system/bin/su>tmpbak\hasRoot
 set /p hasRoot=<tmpbak\hasRoot
+tools\adb shell ls /system/xbin/su>tmpbak\hasRootX
+set /p hasRootX=<tmpbak\hasRootX
 if NOT "%hasRoot%" == "/system/bin/su" (
-	if NOT "%hasRoot%" == "/system/xbin/su" (
+	if NOT "%hasRootX%" == "/system/xbin/su" (
 		echo.
 		echo *** Device is not properly rooted. ***
 		goto quit;
 	)
 )
 set hasRoot=
+set hasRootX=
 call scripts\menu.bat showMenu
 goto quit
 

@@ -1,5 +1,5 @@
 @echo off
-set version=v9.0b2
+set version=v9.0b4
 if %PROCESSOR_ARCHITECTURE% == x86 (
 	set choice=tools\choice32.exe
 	set choiceTextParam=
@@ -20,7 +20,7 @@ if NOT "%hasRoot%" == "/system/bin/su" (
 	if NOT "%hasRootX%" == "/system/xbin/su" (
 		echo.
 		echo *** Device is not properly rooted. ***
-		goto quit;
+		goto quit
 	)
 )
 set hasRoot=

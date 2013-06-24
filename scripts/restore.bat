@@ -19,20 +19,7 @@ call scripts\adb.bat wakeDevice
 echo.
 if "%restore_dryRun%" == "1" (
 	echo --- Restore dry run ---
-	echo.
 )
-
-set restore_inputIMEI=
-set /p restore_inputIMEI=Enter your IMEI (digits only): 
-set restore_inputIMEILen=
-call scripts\string-util.bat strlen restore_inputIMEILen restore_inputIMEI
-if NOT "%restore_inputIMEILen%" == "15" goto onRestoreInvalidIMEI
-set restore_inputIMEILen=
-setlocal enabledelayedexpansion
-set restore_inputIMEI=!restore_inputIMEI:~0,-1!
-setlocal disabledelayedexpansion
-verify > nul
-
 tools\adb get-serialno>tmpbak\restore_serialno
 set /p restore_serialno=<tmpbak\restore_serialno
 
@@ -147,21 +134,13 @@ if NOT "%restore_savedBackupMD5%" == "%restore_pushedBackupMD5%" (
 
 echo.
 echo =======================================
-echo  IMEI / SERIAL CHECK
+echo  SERIAL CHECK
 echo =======================================
-tools\adb shell su -c "%bb% cat %partition% | %bb% grep -m 1 -o %restore_inputIMEI%">tmpbak\restore_partitionIMEI
-if NOT "%errorlevel%" == "0" goto onRestoreFailed
-tools\adb shell su -c "%bb% cat /sdcard/restoreTA.img | %bb% grep -m 1 -o %restore_inputIMEI%">tmpbak\restore_backupIMEI
-if NOT "%errorlevel%" == "0" goto onRestoreFailed
 tools\adb shell su -c "%bb% cat /sdcard/restoreTA.img | %bb% grep -m 1 -o %restore_serialno%">tmpbak\restore_backupSerial
 if NOT "%errorlevel%" == "0" goto onRestoreFailed
-set /p restore_partitionIMEI=<tmpbak\restore_partitionIMEI
-set /p restore_backupIMEI=<tmpbak\restore_backupIMEI
 set /p restore_backupSerial=<tmpbak\restore_backupSerial
 verify > nul
-if NOT "%restore_partitionIMEI%" == "%restore_backupIMEI%" (
-	goto otherDevice
-) else if NOT "%restore_serialno%" == "%restore_backupSerial%" (
+if NOT "%restore_serialno%" == "%restore_backupSerial%" (
 	goto otherDevice
 )
 echo OK
@@ -213,14 +192,6 @@ REM ## RESTORE SUCCESS
 REM #####################
 :onRestoreSuccess
 call:exit 1
-goto:eof
-
-REM #####################
-REM ## RESTORE INVALID IMEI
-REM #####################
-:onRestoreInvalidIMEI
-echo Invalid IMEI provided.
-goto onRestoreCancelled
 goto:eof
 
 REM #####################
@@ -312,13 +283,10 @@ set restore_backupMD5=
 set restore_savedBackupMD5=
 set restore_currentPartitionMD5=
 set restore_pushedBackupMD5=
-set restore_partitionIMEI=
-set restore_backupIMEI=
 set restore_restoredMD5=
 set restore_revertedMD5=
-set restore_inputIMEI=
-set restore_inputIMEILen=
 set restore_backupSerial=
+set restore_serialno=
 del /q /s tmpbak\*.* > nul 2>&1
 
 tools\adb shell rm /sdcard/restoreTA.img > nul 2>&1

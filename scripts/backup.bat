@@ -54,7 +54,7 @@ if "%backup_TAByName%" == "TA" (
 	
 	goto continue2
 ) else (
-	echo Partition not found!
+	echo Partition not found by name.
 	echo.
 	%choice% /c:yn %choiceTextParam% "Do you want to perform an extensive search for the TA?"
 	if errorlevel 2 goto onBackupCancelled

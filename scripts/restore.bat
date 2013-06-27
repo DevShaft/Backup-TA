@@ -263,10 +263,12 @@ if NOT "%~1" == "5" call:dispose
 echo.
 
 if "%~1" == "1" echo *** Restore successful. ***
+if "%~1" == "1" echo *** You must restart the device for the restore to take effect. ***
+
 if "%~1" == "2" echo *** Restore cancelled. ***
 if "%~1" == "3" echo *** Restore unsuccessful. ***
 
-if "%~1" == "4" echo *** DO NOT SHUTDOWN OR REBOOT DEVICE!!! ***
+if "%~1" == "4" echo *** DO NOT SHUTDOWN OR RESTART THE DEVICE!!! ***
 if "%~1" == "4" echo *** Reverting restore has failed! Contact DevShaft @XDA-forums for guidance. ***
 
 if "%~1" == "5" echo *** Revert successful. Try to restore again. ***

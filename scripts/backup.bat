@@ -59,10 +59,6 @@ if "%backup_TAByName%" == "TA" (
 	%choice% /c:yn %choiceTextParam% "Do you want to perform an extensive search for the TA?"
 	if errorlevel 2 goto onBackupCancelled
 	
-	echo.
-	echo =======================================
-	echo  EXTENSIVE SEARCH FOR TA
-	echo =======================================
 	set backup_taPartitionName=
 	goto continue3
 	
@@ -199,6 +195,11 @@ REM #####################
 set backup_currentPartitionMD5=
 set backup_backupMD5=
 set backup_backupPulledMD5=
+set backup_matchSerial=
+set backup_matchMarlin=
+set backup_taPartitionName=
+set backup_TAByName=
+del /q /s tmpbak\*.* > nul 2>&1
 
 tools\adb shell rm /sdcard/backupTA.img > nul 2>&1
 goto:eof

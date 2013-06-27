@@ -1,5 +1,5 @@
 @echo off
-set version=v9.0b4
+set version=v9.0b5
 if %PROCESSOR_ARCHITECTURE% == x86 (
 	set choice=tools\choice32.exe
 	set choiceTextParam=

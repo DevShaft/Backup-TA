@@ -10,7 +10,7 @@ set menu_choices=1
 cls
 echo.
 echo  [ ------------------------------------------------------------ ]
-echo  [  Backup TA %version% for Sony Xperia                            ]
+echo  [  Backup TA %version% for Sony Xperia                              ]
 echo  [ ------------------------------------------------------------ ]
 echo  [  %menu_currentIndex%. Backup                                                   ]
 

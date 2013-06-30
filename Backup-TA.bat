@@ -52,7 +52,6 @@ set choice=
 call scripts\menu.bat dispose
 call scripts\backup.bat dispose
 call scripts\restore.bat dispose
-call scripts\find.bat dispose
 
 del /q /s tmpbak\*.*
 if exist tmpbak rmdir tmpbak

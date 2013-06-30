@@ -30,7 +30,7 @@ echo =======================================
 setLocal enabledelayedexpansion
 echo off > tmpbak\restoreList
 set restore_restoreIndex=0
-for /f "tokens=*" %%D in ('dir/b backup\TA-Backup*.zip') do (
+for /f "tokens=*" %%D in ('dir/b/o-d backup\TA-Backup*.zip') do (
 	set /a restore_restoreIndex+=1
 	echo [!restore_restoreIndex!] %%D >> tmpbak\restoreList
 )
@@ -289,7 +289,7 @@ set restore_restoredMD5=
 set restore_revertedMD5=
 set restore_backupSerial=
 set restore_serialno=
-del /q /s tmpbak\*.* > nul 2>&1
+del /q /s tmpbak\restore_*.* > nul 2>&1
 
 tools\adb shell rm /sdcard/restoreTA.img > nul 2>&1
 tools\adb shell rm /sdcard/revertTA.img > nul 2>&1

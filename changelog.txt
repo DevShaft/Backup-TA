@@ -1,3 +1,17 @@
+Backup TA v9.0 (2013-06-30)
+==============================
+New Features, Improvements
+--------------------------
+- Merged device compatibility check into backup. Removed 'device compatibility check' from menu.
+- Backup does an extensive search for the TA when it can not be found by name, which makes Backup TA compatible with almost if not all Sony Xperia devices.
+- A brief description is displayed of what is going to happen when you choose for a backup or restore as menu option. A dialog will ask you to proceed to not.
+- After a restore a restart message is displayed which tells the user to restart the device for it to take effect.
+
+Fixed Bugs
+----------
+- Fixed bug in datetime stamp creation for backup filename.
+- Fixed sorting bug when choosing a backup to restore.
+
 Backup TA v8.9 (2013-06-18)
 ==============================
 New Features, Improvements

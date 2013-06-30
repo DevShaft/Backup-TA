@@ -5,7 +5,7 @@ REM #####################
 REM ## BACKUP
 REM #####################
 :inspectPartition
-if "%backup_taPartitionName%" == "-1" goto:eof
+if "!backup_taPartitionName!" == "-1" goto:eof
 	echo --- %1 ---
 	set /p "=Searching for Serial No..." < nul
 	tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c '%backup_serialno%'">tmpbak\backup_matchSerial
@@ -26,7 +26,7 @@ if "%backup_taPartitionName%" == "-1" goto:eof
 
 	if "%backup_matchSerial%" == "1" (
 		if "%backup_matchMarlin%" == "1" (
-			if "%backup_taPartitionName%" == "" (
+			if "!backup_taPartitionName!" == "" (
 				set backup_taPartitionName=%1
 			) else (
 				set backup_taPartitionName=-1
@@ -37,6 +37,7 @@ if "%backup_taPartitionName%" == "-1" goto:eof
 	echo.
 	goto:eof
 )
+
 :backupTA
 echo.
 if NOT exist backup mkdir backup > nul 2>&1
@@ -47,44 +48,33 @@ echo  FIND TA PARTITION
 echo =======================================
 tools\adb shell su -c "ls -l %partition% | %bb% grep -o 'TA ->' | %bb% grep -o 'TA'">tmpbak\backup_TAByName
 set /p backup_TAByName=<tmpbak\backup_TAByName
-
 if "%backup_TAByName%" == "TA" (
-
 	tools\adb shell su -c "ls -l %partition% | %bb% grep -o '/dev/block/.*'">tmpbak\backup_defaultTA
-	
-	goto continue2
+	set /p backup_defaultTA=<tmpbak\backup_defaultTA
+	set partition=%backup_defaultTA%
+	echo Partition found!
 ) else (
 	echo Partition not found by name.
 	echo.
 	%choice% /c:yn %choiceTextParam% "Do you want to perform an extensive search for the TA?"
 	if errorlevel 2 goto onBackupCancelled
 	
-	set backup_taPartitionName=
-	goto continue3
-	
-)
-:continue3
 	tools\adb get-serialno>tmpbak\backup_serialno
 	set /p backup_serialno=<tmpbak\backup_serialno
-	
+
 	echo.
 	echo =======================================
 	echo  INSPECTING PARTITIONS
 	echo =======================================
-	
-	
+	set backup_taPartitionName=
+	setlocal EnableDelayedExpansion
 	tools\adb shell su -c "%bb% cat /proc/partitions | %bb% grep -o ' [0-9]\{1,4\} mmc.*' | %bb% grep -o 'mmc.*'">tmpbak\backup_potentialPartitions
 	for /F "tokens=*" %%A in (tmpbak\backup_potentialPartitions) do call:inspectPartition %%A
 	
-	goto continue
-
-goto continue2
-:continue
-if NOT "%backup_taPartitionName%" == "" (
-		if NOT "%backup_taPartitionName%" == "-1" (
-			echo Partition found!
-			set partition=/dev/block/%backup_taPartitionName%
-			goto continue3
+	if NOT "!backup_taPartitionName!" == "" (
+		if NOT "!backup_taPartitionName!" == "-1" (
+			echo Partition found^^!
+			set partition=/dev/block/!backup_taPartitionName!
 		) else (
 				echo *** More than one partition match the TA partition search criteria. ***
 				echo *** Therefore it is not possible to determine which one or ones to use. ***
@@ -95,13 +85,9 @@ if NOT "%backup_taPartitionName%" == "" (
 		echo *** No compatible TA partition found on your device. ***
 		goto onBackupCancelled
 	)
+	setlocal DisableDelayedExpansion
+)
 
-
-:continue2
-set /p backup_defaultTA=<tmpbak\backup_defaultTA
-	set partition=%backup_defaultTA%
-	echo Partition found!
-:continue3
 echo.
 echo =======================================
 echo  BACKUP TA PARTITION
@@ -152,8 +138,9 @@ echo  PACKAGE BACKUP
 echo =======================================
 echo %partition%>tmpbak\TA.blk
 echo %backup_backupPulledMD5%>tmpbak\TA.md5
+tools\adb shell su -c "%bb% date +%%Y%%m%%d.%%H%%M%%S">tmpbak\backup_timestamp
+set /p backup_timestamp=<tmpbak\backup_timestamp
 cd tmpbak
-call ..\scripts\date-util.bat getDateTime backup_timestamp
 ..\tools\zip a ..\backup\TA-backup-%backup_timestamp%.zip TA.img TA.md5 TA.blk
 if NOT "%errorlevel%" == "0" goto onBackupFailed
 cd..
@@ -199,7 +186,7 @@ set backup_matchSerial=
 set backup_matchMarlin=
 set backup_taPartitionName=
 set backup_TAByName=
-del /q /s tmpbak\*.* > nul 2>&1
+del /q /s tmpbak\backup_*.* > nul 2>&1
 
 tools\adb shell rm /sdcard/backupTA.img > nul 2>&1
 goto:eof

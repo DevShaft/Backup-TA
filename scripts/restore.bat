@@ -19,20 +19,7 @@ call scripts\adb.bat wakeDevice
 echo.
 if "%restore_dryRun%" == "1" (
 	echo --- Restore dry run ---
-	echo.
 )
-
-set restore_inputIMEI=
-set /p restore_inputIMEI=Enter your IMEI (digits only): 
-set restore_inputIMEILen=
-call scripts\string-util.bat strlen restore_inputIMEILen restore_inputIMEI
-if NOT "%restore_inputIMEILen%" == "15" goto onRestoreInvalidIMEI
-set restore_inputIMEILen=
-setlocal enabledelayedexpansion
-set restore_inputIMEI=!restore_inputIMEI:~0,-1!
-setlocal disabledelayedexpansion
-verify > nul
-
 tools\adb get-serialno>tmpbak\restore_serialno
 set /p restore_serialno=<tmpbak\restore_serialno
 
@@ -43,7 +30,7 @@ echo =======================================
 setLocal enabledelayedexpansion
 echo off > tmpbak\restoreList
 set restore_restoreIndex=0
-for /f "tokens=*" %%D in ('dir/b backup\TA-Backup*.zip') do (
+for /f "tokens=*" %%D in ('dir/b/o-d backup\TA-Backup*.zip') do (
 	set /a restore_restoreIndex+=1
 	echo [!restore_restoreIndex!] %%D >> tmpbak\restoreList
 )
@@ -73,6 +60,11 @@ echo  EXTRACT BACKUP
 echo =======================================
 tools\zip x -y backup\%restore_restoreFile% -otmpbak
 if NOT "%errorlevel%" == "0" goto onRestoreFailed
+if exist tmpbak\TA.blk (
+	set /p partition=<tmpbak\TA.blk
+) else (
+	set partition=/dev/block/mmcblk0p1
+)
 
 echo.
 echo =======================================
@@ -142,21 +134,13 @@ if NOT "%restore_savedBackupMD5%" == "%restore_pushedBackupMD5%" (
 
 echo.
 echo =======================================
-echo  IMEI / SERIAL CHECK
+echo  SERIAL CHECK
 echo =======================================
-tools\adb shell su -c "%bb% cat %partition% | %bb% grep -m 1 -o %restore_inputIMEI%">tmpbak\restore_partitionIMEI
-if NOT "%errorlevel%" == "0" goto onRestoreFailed
-tools\adb shell su -c "%bb% cat /sdcard/restoreTA.img | %bb% grep -m 1 -o %restore_inputIMEI%">tmpbak\restore_backupIMEI
-if NOT "%errorlevel%" == "0" goto onRestoreFailed
 tools\adb shell su -c "%bb% cat /sdcard/restoreTA.img | %bb% grep -m 1 -o %restore_serialno%">tmpbak\restore_backupSerial
 if NOT "%errorlevel%" == "0" goto onRestoreFailed
-set /p restore_partitionIMEI=<tmpbak\restore_partitionIMEI
-set /p restore_backupIMEI=<tmpbak\restore_backupIMEI
 set /p restore_backupSerial=<tmpbak\restore_backupSerial
 verify > nul
-if NOT "%restore_partitionIMEI%" == "%restore_backupIMEI%" (
-	goto otherDevice
-) else if NOT "%restore_serialno%" == "%restore_backupSerial%" (
+if NOT "%restore_serialno%" == "%restore_backupSerial%" (
 	goto otherDevice
 )
 echo OK
@@ -208,14 +192,6 @@ REM ## RESTORE SUCCESS
 REM #####################
 :onRestoreSuccess
 call:exit 1
-goto:eof
-
-REM #####################
-REM ## RESTORE INVALID IMEI
-REM #####################
-:onRestoreInvalidIMEI
-echo Invalid IMEI provided.
-goto onRestoreCancelled
 goto:eof
 
 REM #####################
@@ -283,15 +259,16 @@ REM #####################
 REM ## EXIT RESTORE
 REM #####################
 :exit
-if "%~1" == "1" call:dispose
-if "%~1" == "3" call:dispose
+if NOT "%~1" == "5" call:dispose
 echo.
 
 if "%~1" == "1" echo *** Restore successful. ***
+if "%~1" == "1" echo *** You must restart the device for the restore to take effect. ***
+
 if "%~1" == "2" echo *** Restore cancelled. ***
 if "%~1" == "3" echo *** Restore unsuccessful. ***
 
-if "%~1" == "4" echo *** DO NOT SHUTDOWN OR REBOOT DEVICE!!! ***
+if "%~1" == "4" echo *** DO NOT SHUTDOWN OR RESTART THE DEVICE!!! ***
 if "%~1" == "4" echo *** Reverting restore has failed! Contact DevShaft @XDA-forums for guidance. ***
 
 if "%~1" == "5" echo *** Revert successful. Try to restore again. ***
@@ -308,13 +285,11 @@ set restore_backupMD5=
 set restore_savedBackupMD5=
 set restore_currentPartitionMD5=
 set restore_pushedBackupMD5=
-set restore_partitionIMEI=
-set restore_backupIMEI=
 set restore_restoredMD5=
 set restore_revertedMD5=
-set restore_inputIMEI=
-set restore_inputIMEILen=
 set restore_backupSerial=
+set restore_serialno=
+del /q /s tmpbak\restore_*.* > nul 2>&1
 
 tools\adb shell rm /sdcard/restoreTA.img > nul 2>&1
 tools\adb shell rm /sdcard/revertTA.img > nul 2>&1

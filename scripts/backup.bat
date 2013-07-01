@@ -46,8 +46,6 @@ echo.
 echo =======================================
 echo  FIND TA PARTITION
 echo =======================================
-echo !partition!
-pause
 tools\adb shell su -c "ls -l !partition! | %bb% grep -o 'TA ->' | %bb% grep -o 'TA'">tmpbak\backup_TAByName
 set /p backup_TAByName=<tmpbak\backup_TAByName
 if "!backup_TAByName!" == "TA" (

@@ -8,7 +8,7 @@ REM #####################
 cls
 echo.
 echo  [ ------------------------------------------------------------ ]
-echo  [  Backup TA %version% for Sony Xperia               MIT License    ]
+echo  [  Backup TA %VERSION% for Sony Xperia               MIT License    ]
 echo  [ ------------------------------------------------------------ ]
 echo  [  Copyright (C) 2013 DevShaft                                 ]
 echo  [                                                              ]

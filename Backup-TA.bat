@@ -1,32 +1,34 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-set version=v9.1b1
+set VERSION=v9.1b1
 if %PROCESSOR_ARCHITECTURE% == x86 (
-	set choice=tools\choice32.exe
-	set choiceTextParam=
+	set CHOICE=tools\choice32.exe
+	set CHOICE_TEXT_PARAM=
 ) else (
-	set choice=tools\choice64.exe
-	set choiceTextParam=/m
+	set CHOICE=tools\choice64.exe
+	set CHOICE_TEXT_PARAM=/m
 )
 cd %~dp0
 call scripts\license.bat showLicense
 call:initialize
 call scripts\busybox.bat pushBusyBox
 if NOT exist tmpbak mkdir tmpbak > nul 2>&1
+
 tools\adb shell ls /system/bin/su>tmpbak\hasRoot
 set /p hasRoot=<tmpbak\hasRoot
-tools\adb shell ls /system/xbin/su>tmpbak\hasRootX
-set /p hasRootX=<tmpbak\hasRootX
-if NOT "%hasRoot%" == "/system/bin/su" (
-	if NOT "%hasRootX%" == "/system/xbin/su" (
+if NOT "!hasRoot!" == "/system/bin/su" (
+	tools\adb shell ls /system/xbin/su>tmpbak\hasRoot
+	set /p hasRoot=<tmpbak\hasRoot
+	if NOT "!hasRoot!" == "/system/xbin/su" (
 		echo.
 		echo *** Device is not properly rooted. ***
 		goto quit
 	)
 )
 set hasRoot=
-set hasRootX=
+del /q /s tmpbak\hasroot
+
 call scripts\menu.bat showMenu
 goto quit
 
@@ -36,7 +38,7 @@ REM #####################
 :initialize
 cls
 call scripts\adb.bat wakeDevice
-set partition=/dev/block/platform/msm_sdcc.1/by-name/TA
+set partitionByName=/dev/block/platform/msm_sdcc.1/by-name/TA
 goto:eof
 
 REM #####################

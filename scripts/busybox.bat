@@ -8,7 +8,7 @@ REM #####################
 set /p "=Pushing Backup TA Tools..." < nul
 tools\adb push tools\busybox /data/local/tmp/busybox-backup-ta > nul 2>&1
 tools\adb shell chmod 755 /data/local/tmp/busybox-backup-ta > nul 2>&1
-set bb=/data/local/tmp/busybox-backup-ta
+set BB=/data/local/tmp/busybox-backup-ta
 echo OK
 goto:eof
 

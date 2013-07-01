@@ -259,7 +259,7 @@ REM #####################
 REM ## EXIT RESTORE
 REM #####################
 :exit
-if NOT "%~1" == "5" call:dispose
+if NOT "%~1" == "5" call:dispose %~1
 echo.
 
 if "%~1" == "1" echo *** Restore successful. ***
@@ -289,7 +289,7 @@ set restore_restoredMD5=
 set restore_revertedMD5=
 set restore_backupSerial=
 set restore_serialno=
-del /q /s tmpbak\restore_*.* > nul 2>&1
+if "%~1" == "1" del /q /s tmpbak\restore_*.* > nul 2>&1
 
 tools\adb shell rm /sdcard/restoreTA.img > nul 2>&1
 tools\adb shell rm /sdcard/revertTA.img > nul 2>&1

@@ -1,4 +1,6 @@
 @echo off
+setlocal EnableDelayedExpansion
+
 set version=v9.0
 if %PROCESSOR_ARCHITECTURE% == x86 (
 	set choice=tools\choice32.exe

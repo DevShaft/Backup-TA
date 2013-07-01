@@ -8,9 +8,9 @@ REM #####################
 if "!backup_taPartitionName!" == "-1" goto:eof
 	echo --- %1 ---
 	set /p "=Searching for Serial No..." < nul
-	tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c '%backup_serialno%'">tmpbak\backup_matchSerial
+	tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c '!backup_serialno!'">tmpbak\backup_matchSerial
 	set /p backup_matchSerial=<tmpbak\backup_matchSerial
-	if "%backup_matchSerial%" == "1" (
+	if "!backup_matchSerial!" == "1" (
 		echo +
 	) else (
 		echo -
@@ -18,14 +18,14 @@ if "!backup_taPartitionName!" == "-1" goto:eof
 	set /p "=Searching for Marlin Certificate..." < nul
 	tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c -i 'marlin:datacertification'">tmpbak\backup_matchMarlin
 	set /p backup_matchMarlin=<tmpbak\backup_matchMarlin
-	if "%backup_matchMarlin%" == "1" (
+	if "!backup_matchMarlin!" == "1" (
 		echo +
 	) else (
 		echo -
 	)
 
-	if "%backup_matchSerial%" == "1" (
-		if "%backup_matchMarlin%" == "1" (
+	if "!backup_matchSerial!" == "1" (
+		if "!backup_matchMarlin!" == "1" (
 			if "!backup_taPartitionName!" == "" (
 				set backup_taPartitionName=%1
 			) else (
@@ -46,13 +46,15 @@ echo.
 echo =======================================
 echo  FIND TA PARTITION
 echo =======================================
-tools\adb shell su -c "ls -l %partition% | %bb% grep -o 'TA ->' | %bb% grep -o 'TA'">tmpbak\backup_TAByName
+echo !partition!
+pause
+tools\adb shell su -c "ls -l !partition! | %bb% grep -o 'TA ->' | %bb% grep -o 'TA'">tmpbak\backup_TAByName
 set /p backup_TAByName=<tmpbak\backup_TAByName
-if "%backup_TAByName%" == "TA" (
-	tools\adb shell su -c "ls -l %partition% | %bb% grep -o '/dev/block/.*'">tmpbak\backup_defaultTA
+if "!backup_TAByName!" == "TA" (
+	tools\adb shell su -c "ls -l !partition! | %bb% grep -o '/dev/block/.*'">tmpbak\backup_defaultTA
 	set /p backup_defaultTA=<tmpbak\backup_defaultTA
-	set partition=%backup_defaultTA%
-	echo Partition found!
+	set partition=!backup_defaultTA!
+	echo Partition found^^!
 ) else (
 	echo Partition not found by name.
 	echo.
@@ -67,7 +69,7 @@ if "%backup_TAByName%" == "TA" (
 	echo  INSPECTING PARTITIONS
 	echo =======================================
 	set backup_taPartitionName=
-	setlocal EnableDelayedExpansion
+	
 	tools\adb shell su -c "%bb% cat /proc/partitions | %bb% grep -o ' [0-9]\{1,4\} mmc.*' | %bb% grep -o 'mmc.*'">tmpbak\backup_potentialPartitions
 	for /F "tokens=*" %%A in (tmpbak\backup_potentialPartitions) do call:inspectPartition %%A
 	
@@ -85,15 +87,15 @@ if "%backup_TAByName%" == "TA" (
 		echo *** No compatible TA partition found on your device. ***
 		goto onBackupCancelled
 	)
-	setlocal DisableDelayedExpansion
+	
 )
 
 echo.
 echo =======================================
 echo  BACKUP TA PARTITION
 echo =======================================
-tools\adb shell su -c "%bb% md5sum %partition% | %bb% grep -o '^[^ ]*'">tmpbak\backup_currentPartitionMD5
-tools\adb shell su -c "%bb% dd if=%partition% of=/sdcard/backupTA.img"
+tools\adb shell su -c "%bb% md5sum !partition! | %bb% grep -o '^^[^^ ]*'">tmpbak\backup_currentPartitionMD5
+tools\adb shell su -c "%bb% dd if=!partition! of=/sdcard/backupTA.img"
 
 echo.
 echo =======================================
@@ -103,7 +105,7 @@ tools\adb shell su -c "%bb% md5sum /sdcard/backupTA.img | %bb% grep -o '^[^ ]*'"
 set /p backup_currentPartitionMD5=<tmpbak\backup_currentPartitionMD5
 set /p backup_backupMD5=<tmpbak\backup_backupMD5
 verify > nul
-if NOT "%backup_currentPartitionMD5%" == "%backup_backupMD5%" (
+if NOT "!backup_currentPartitionMD5!" == "!backup_backupMD5!" (
 	echo FAILED
 	goto onBackupFailed
 ) else (
@@ -136,7 +138,7 @@ echo.
 echo =======================================
 echo  PACKAGE BACKUP
 echo =======================================
-echo %partition%>tmpbak\TA.blk
+echo !partition!>tmpbak\TA.blk
 echo %backup_backupPulledMD5%>tmpbak\TA.md5
 tools\adb shell su -c "%bb% date +%%Y%%m%%d.%%H%%M%%S">tmpbak\backup_timestamp
 set /p backup_timestamp=<tmpbak\backup_timestamp
@@ -166,7 +168,7 @@ REM #####################
 REM ## EXIT BACKUP
 REM #####################
 :exit
-call:dispose
+call:dispose %~1
 echo.
 if "%~1" == "1" echo *** Backup successful. ***
 if "%~1" == "2" echo *** Backup cancelled. ***
@@ -186,7 +188,9 @@ set backup_matchSerial=
 set backup_matchMarlin=
 set backup_taPartitionName=
 set backup_TAByName=
-del /q /s tmpbak\backup_*.* > nul 2>&1
+set partition=/dev/block/platform/msm_sdcc.1/by-name/TA
+
+if "%~1" == "1" del /q /s tmpbak\backup_*.* > nul 2>&1
 
 tools\adb shell rm /sdcard/backupTA.img > nul 2>&1
 goto:eof

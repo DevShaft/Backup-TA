@@ -10,25 +10,12 @@ if %PROCESSOR_ARCHITECTURE% == x86 (
 	set CHOICE_TEXT_PARAM=/m
 )
 cd %~dp0
+if NOT exist tmpbak mkdir tmpbak > nul 2>&1
 call scripts\license.bat showLicense
 call:initialize
 call scripts\busybox.bat pushBusyBox
-if NOT exist tmpbak mkdir tmpbak > nul 2>&1
-
-tools\adb shell ls /system/bin/su>tmpbak\hasRoot
-set /p hasRoot=<tmpbak\hasRoot
-if NOT "!hasRoot!" == "/system/bin/su" (
-	tools\adb shell ls /system/xbin/su>tmpbak\hasRoot
-	set /p hasRoot=<tmpbak\hasRoot
-	if NOT "!hasRoot!" == "/system/xbin/su" (
-		echo.
-		echo *** Device is not properly rooted. ***
-		goto quit
-	)
-)
-set hasRoot=
-del /q /s tmpbak\hasRoot
-
+call scripts\root.bat check hasRoot
+if NOT "!hasRoot!" == "1" goto quit
 call scripts\menu.bat showMenu
 goto quit
 

@@ -27,7 +27,7 @@ if NOT "!hasRoot!" == "/system/bin/su" (
 	)
 )
 set hasRoot=
-del /q /s tmpbak\hasroot
+del /q /s tmpbak\hasRoot
 
 call scripts\menu.bat showMenu
 goto quit

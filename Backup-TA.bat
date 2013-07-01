@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-set version=v9.1
+set version=v9.1b1
 if %PROCESSOR_ARCHITECTURE% == x86 (
 	set choice=tools\choice32.exe
 	set choiceTextParam=

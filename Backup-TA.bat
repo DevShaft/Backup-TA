@@ -25,7 +25,7 @@ REM #####################
 :initialize
 cls
 call scripts\adb.bat wakeDevice
-set partitionByName=/dev/block/platform/msm_sdcc.1/by-name/TA
+set PARTITION_BY_NAME=/dev/block/platform/msm_sdcc.1/by-name/TA
 goto:eof
 
 REM #####################

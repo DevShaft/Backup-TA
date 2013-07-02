@@ -4,7 +4,7 @@ goto:eof
 REM #####################
 REM ## ROOT CHECK
 REM #####################
-:check %~1
+:check
 tools\adb shell ls /system/bin/su>tmpbak\su
 set /p su=<tmpbak\su
 if NOT "!su!" == "/system/bin/su" (

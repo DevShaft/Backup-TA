@@ -1,3 +1,13 @@
+Backup TA v9.1 (2013-07-02)
+==============================
+New Features, Improvements
+--------------------------
+- Changed the restore backup file confirmation dialog in that it now includes the filename chosen.
+
+Fixed Bugs
+--------------------------
+- Fix bug which caused the tool not to find the TA by name the second time you run the backup process within the same session.
+
 Backup TA v9.0 (2013-06-30)
 ==============================
 New Features, Improvements

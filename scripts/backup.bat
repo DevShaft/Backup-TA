@@ -8,7 +8,7 @@ REM #####################
 if "!backup_taPartitionName!" == "-1" goto:eof
 	echo --- %1 ---
 	set /p "=Searching for Serial No..." < nul
-	tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c '!backup_serialno!'">tmpbak\backup_matchSerial
+	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c '!backup_serialno!'">tmpbak\backup_matchSerial
 	set /p backup_matchSerial=<tmpbak\backup_matchSerial
 	if "!backup_matchSerial!" == "1" (
 		echo +
@@ -16,7 +16,7 @@ if "!backup_taPartitionName!" == "-1" goto:eof
 		echo -
 	)
 	set /p "=Searching for Marlin Certificate..." < nul
-	tools\adb shell su -c "%bb% cat /dev/block/%1 | %bb% grep -s -m 1 -c -i 'marlin:datacertification'">tmpbak\backup_matchMarlin
+	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c -i 'marlin:datacertification'">tmpbak\backup_matchMarlin
 	set /p backup_matchMarlin=<tmpbak\backup_matchMarlin
 	if "!backup_matchMarlin!" == "1" (
 		echo +
@@ -46,19 +46,17 @@ echo.
 echo =======================================
 echo  FIND TA PARTITION
 echo =======================================
-echo !partition!
-pause
-tools\adb shell su -c "ls -l !partition! | %bb% grep -o 'TA ->' | %bb% grep -o 'TA'">tmpbak\backup_TAByName
+tools\adb shell su -c "ls -l %PARTITION_BY_NAME% | %BB% grep -o 'TA ->' | %BB% grep -o 'TA'">tmpbak\backup_TAByName
 set /p backup_TAByName=<tmpbak\backup_TAByName
 if "!backup_TAByName!" == "TA" (
-	tools\adb shell su -c "ls -l !partition! | %bb% grep -o '/dev/block/.*'">tmpbak\backup_defaultTA
+	tools\adb shell su -c "ls -l %PARTITION_BY_NAME% | %BB% grep -o '/dev/block/.*'">tmpbak\backup_defaultTA
 	set /p backup_defaultTA=<tmpbak\backup_defaultTA
 	set partition=!backup_defaultTA!
 	echo Partition found^^!
 ) else (
 	echo Partition not found by name.
 	echo.
-	%choice% /c:yn %choiceTextParam% "Do you want to perform an extensive search for the TA?"
+	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Do you want to perform an extensive search for the TA?"
 	if errorlevel 2 goto onBackupCancelled
 	
 	tools\adb get-serialno>tmpbak\backup_serialno
@@ -70,7 +68,7 @@ if "!backup_TAByName!" == "TA" (
 	echo =======================================
 	set backup_taPartitionName=
 	
-	tools\adb shell su -c "%bb% cat /proc/partitions | %bb% grep -o ' [0-9]\{1,4\} mmc.*' | %bb% grep -o 'mmc.*'">tmpbak\backup_potentialPartitions
+	tools\adb shell su -c "%BB% cat /proc/partitions | %BB% grep -o ' [0-9]\{1,4\} mmc.*' | %BB% grep -o 'mmc.*'">tmpbak\backup_potentialPartitions
 	for /F "tokens=*" %%A in (tmpbak\backup_potentialPartitions) do call:inspectPartition %%A
 	
 	if NOT "!backup_taPartitionName!" == "" (
@@ -94,14 +92,14 @@ echo.
 echo =======================================
 echo  BACKUP TA PARTITION
 echo =======================================
-tools\adb shell su -c "%bb% md5sum !partition! | %bb% grep -o '^^[^^ ]*'">tmpbak\backup_currentPartitionMD5
-tools\adb shell su -c "%bb% dd if=!partition! of=/sdcard/backupTA.img"
+tools\adb shell su -c "%BB% md5sum !partition! | %BB% grep -o '^^[^^ ]*'">tmpbak\backup_currentPartitionMD5
+tools\adb shell su -c "%BB% dd if=!partition! of=/sdcard/backupTA.img"
 
 echo.
 echo =======================================
 echo  INTEGRITY CHECK
 echo =======================================
-tools\adb shell su -c "%bb% md5sum /sdcard/backupTA.img | %bb% grep -o '^[^ ]*'">tmpbak\backup_backupMD5
+tools\adb shell su -c "%BB% md5sum /sdcard/backupTA.img | %BB% grep -o '^[^ ]*'">tmpbak\backup_backupMD5
 set /p backup_currentPartitionMD5=<tmpbak\backup_currentPartitionMD5
 set /p backup_backupMD5=<tmpbak\backup_backupMD5
 verify > nul
@@ -127,7 +125,7 @@ tools\md5 -l -n tmpbak\TA.img>tmpbak\backup_backupPulledMD5
 if NOT "%errorlevel%" == "0" goto onBackupFailed
 set /p backup_backupPulledMD5=<tmpbak\backup_backupPulledMD5
 verify > nul
-if NOT "%backup_currentPartitionMD5%" == "%backup_backupPulledMD5%" (
+if NOT "!backup_currentPartitionMD5!" == "!backup_backupPulledMD5!" (
 	echo FAILED
 	goto onBackupFailed
 ) else (
@@ -139,11 +137,11 @@ echo =======================================
 echo  PACKAGE BACKUP
 echo =======================================
 echo !partition!>tmpbak\TA.blk
-echo %backup_backupPulledMD5%>tmpbak\TA.md5
-tools\adb shell su -c "%bb% date +%%Y%%m%%d.%%H%%M%%S">tmpbak\backup_timestamp
+echo !backup_backupPulledMD5!>tmpbak\TA.md5
+tools\adb shell su -c "%BB% date +%%Y%%m%%d.%%H%%M%%S">tmpbak\backup_timestamp
 set /p backup_timestamp=<tmpbak\backup_timestamp
 cd tmpbak
-..\tools\zip a ..\backup\TA-backup-%backup_timestamp%.zip TA.img TA.md5 TA.blk
+..\tools\zip a ..\backup\TA-backup-!backup_timestamp!.zip TA.img TA.md5 TA.blk
 if NOT "%errorlevel%" == "0" goto onBackupFailed
 cd..
 
@@ -188,7 +186,7 @@ set backup_matchSerial=
 set backup_matchMarlin=
 set backup_taPartitionName=
 set backup_TAByName=
-set partition=/dev/block/platform/msm_sdcc.1/by-name/TA
+set partition=
 
 if "%~1" == "1" del /q /s tmpbak\backup_*.* > nul 2>&1
 

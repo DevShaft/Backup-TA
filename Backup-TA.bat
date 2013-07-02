@@ -59,4 +59,6 @@ REM ## QUIT
 REM #####################
 :quit
 call:dispose
+echno.
+pause
 goto:eof

@@ -54,7 +54,6 @@ if "!menu_decision!" == "1" (
 	echo.
 	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Are you sure you want to continue?"
 	if errorlevel 2 goto showMenu
-	
 	call scripts\backup.bat backupTA
 	set menu_decision=0
 ) 

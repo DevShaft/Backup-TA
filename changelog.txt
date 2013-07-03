@@ -2,7 +2,7 @@ Backup TA v9.3 (2013-07-03)
 ==============================
 Fixed Bugs
 --------------------------
-- Potentially fixed hanging issue when making backup.
+- Fixed menu bug
 
 Backup TA v9.2 (2013-07-02)
 ==============================

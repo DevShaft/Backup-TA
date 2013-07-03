@@ -12,36 +12,36 @@ echo.
 echo  [ ------------------------------------------------------------ ]
 echo  [  Backup TA %VERSION% for Sony Xperia                              ]
 echo  [ ------------------------------------------------------------ ]
-echo  [  %menu_currentIndex%. Backup                                                   ]
+echo  [  !menu_currentIndex!. Backup                                                   ]
 
 set /a menu_currentIndex+=1 >nul
-set menu_choices=%menu_choices%%menu_currentIndex%
+set menu_choices=!menu_choices!!menu_currentIndex!
 
-echo  [  %menu_currentIndex%. Restore                                                  ]
-
-set /a menu_currentIndex+=1 >nul
-set menu_choices=%menu_choices%%menu_currentIndex%
-
-echo  [  %menu_currentIndex%. Restore dry-run                                          ]
+echo  [  !menu_currentIndex!. Restore                                                  ]
 
 set /a menu_currentIndex+=1 >nul
-set menu_choices=%menu_choices%%menu_currentIndex%
+set menu_choices=!menu_choices!!menu_currentIndex!
 
-echo  [  %menu_currentIndex%. Convert v4 backup                                        ]
+echo  [  !menu_currentIndex!. Restore dry-run                                          ]
 
 set /a menu_currentIndex+=1 >nul
-set menu_choices=%menu_choices%%menu_currentIndex%
+set menu_choices=!menu_choices!!menu_currentIndex!
 
-echo  [  %menu_currentIndex%. Quit                                                     ]
+echo  [  !menu_currentIndex!. Convert v4 backup                                        ]
+
+set /a menu_currentIndex+=1 >nul
+set menu_choices=!menu_choices!!menu_currentIndex!
+
+echo  [  !menu_currentIndex!. Quit                                                     ]
 echo  [ ------------------------------------------------------------ ]
 
-%choice% /c:%menu_choices% %choiceTextParam% "Please make your decision:"
+%CHOICE% /c:!menu_choices! %CHOICE_TEXT_PARAM% "Please make your decision:"
 
 set menu_decision=%errorlevel%
 set menu_currentIndex=
 set menu_choices=
 
-if %menu_decision% == 1 (
+if "!menu_decision!" == "1" (
 	echo.
 	echo =======================================
 	echo  BACKUP
@@ -52,13 +52,12 @@ if %menu_decision% == 1 (
 	echo The extensive search will inspect many of the partitions on your device,
 	echo in the hope to find it and continue with the backup process.
 	echo.
-	%choice% /c:yn %choiceTextParam% "Are you sure you want to continue?"
+	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Are you sure you want to continue?"
 	if errorlevel 2 goto showMenu
-	
 	call scripts\backup.bat backupTA
 	set menu_decision=0
-)
-if %menu_decision% == 2 (
+) 
+if "!menu_decision!" == "2" (
 	echo.
 	echo =======================================
 	echo  RESTORE
@@ -71,12 +70,12 @@ if %menu_decision% == 2 (
 	echo partition like TA, but with these safeguards that risk is kept to an
 	echo absolute minimum. 
 	echo.
-	%choice% /c:yn %choiceTextParam% "Are you sure you want to continue?"
+	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Are you sure you want to continue?"
 	if errorlevel 2 goto showMenu
 	call scripts\restore.bat restoreTA
 	set menu_decision=0
 )
-if %menu_decision% == 3 (
+if "!menu_decision!" == "3" (
 	echo.
 	echo =======================================
 	echo  RESTORE DRY-RUN
@@ -87,20 +86,20 @@ if %menu_decision% == 3 (
 	echo backup to the device. It will however perform every integrity check, so 
 	echo you can test beforehand if your backup is invalid or corrupted.
 	echo.
-	%choice% /c:yn %choiceTextParam% "Are you sure you want to continue?"
+	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Are you sure you want to continue?"
 	if errorlevel 2 goto showMenu
 	call scripts\restore.bat restoreTAdry
 	set menu_decision=0
 )
-if %menu_decision% == 4 (
+if "!menu_decision!" == "4" (
 	call scripts\convert.bat showConvertV4
 	set menu_decision=0
 )
-if %menu_decision% == 5 (
+if "!menu_decision!" == "5" (
 	set menu_decision=-1
 )
 
-if %menu_decision%==0 (goto showMenu)
+if "!menu_decision!" == "0" goto showMenu
 goto:eof
 
 :dispose

@@ -46,10 +46,10 @@ echo.
 echo =======================================
 echo  FIND TA PARTITION
 echo =======================================
-tools\adb shell su -c "ls -l %PARTITION_BY_NAME% | %BB% grep -o 'TA ->' | %BB% grep -o 'TA'">tmpbak\backup_TAByName
+tools\adb shell su -c "%BB% ls -l %PARTITION_BY_NAME% | %BB% grep -o 'TA ->' | %BB% grep -o 'TA'">tmpbak\backup_TAByName
 set /p backup_TAByName=<tmpbak\backup_TAByName
 if "!backup_TAByName!" == "TA" (
-	tools\adb shell su -c "ls -l %PARTITION_BY_NAME% | %BB% grep -o '/dev/block/.*'">tmpbak\backup_defaultTA
+	tools\adb shell su -c "%BB% ls -l %PARTITION_BY_NAME% | %BB% grep -o '/dev/block/mmc.*'">tmpbak\backup_defaultTA
 	set /p backup_defaultTA=<tmpbak\backup_defaultTA
 	set partition=!backup_defaultTA!
 	echo Partition found^^!

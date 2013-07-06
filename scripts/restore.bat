@@ -29,7 +29,7 @@ echo  CHOOSE BACKUP TO RESTORE
 echo =======================================
 echo off > tmpbak\restoreList
 set restore_restoreIndex=0
-for /f "tokens=*" %%D in ('dir/b/o-d backup\TA-Backup*.zip') do (
+for /f "tokens=*" %%D in ('dir/b/o backup\TA-Backup*.zip') do (
 	set /a restore_restoreIndex+=1
 	echo [!restore_restoreIndex!] %%D >> tmpbak\restoreList
 )

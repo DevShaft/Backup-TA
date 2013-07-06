@@ -1,3 +1,10 @@
+Backup TA v9.4 (2013-07-06)
+==============================
+Fixed Bugs
+--------------------------
+- Fixed the hang issue some users were having.
+- Changed the sort order of backup list in restore from ascending to descending.
+
 Backup TA v9.3 (2013-07-03)
 ==============================
 Fixed Bugs

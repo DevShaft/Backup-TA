@@ -46,11 +46,11 @@ echo.
 echo =======================================
 echo  FIND TA PARTITION
 echo =======================================
-tools\adb shell su -c "%BB% ls -l %PARTITION_BY_NAME% | %BB% grep -o 'TA ->' | %BB% grep -o 'TA'">tmpbak\backup_TAByName
-set /p backup_TAByName=<tmpbak\backup_TAByName
-if "!backup_TAByName!" == "TA" (
-	tools\adb shell su -c "%BB% ls -l %PARTITION_BY_NAME% | %BB% grep -o '/dev/block/mmc.*'">tmpbak\backup_defaultTA
-	set /p backup_defaultTA=<tmpbak\backup_defaultTA
+tools\adb shell su -c "%BB% ls -l %PARTITION_BY_NAME% | %BB% awk '{print \$11}'">tmpbak\backup_defaultTA
+set /p backup_defaultTA=<tmpbak\backup_defaultTA
+tools\adb shell su -c "if [ -b '!backup_defaultTA!' ]; then echo '1'; else echo '0'; fi">tmpbak\backup_defaultTAvalid
+set /p backup_defaultTAvalid=<tmpbak\backup_defaultTAvalid
+if "!backup_defaultTAvalid!" == "1" (
 	set partition=!backup_defaultTA!
 	echo Partition found^^!
 ) else (
@@ -67,8 +67,7 @@ if "!backup_TAByName!" == "TA" (
 	echo  INSPECTING PARTITIONS
 	echo =======================================
 	set backup_taPartitionName=
-	
-	tools\adb shell su -c "%BB% cat /proc/partitions | %BB% grep -o ' [0-9]\{1,4\} mmc.*' | %BB% grep -o 'mmc.*'">tmpbak\backup_potentialPartitions
+	tools\adb shell su -c "%BB% cat /proc/partitions | %BB% awk '{if (\$3<=9999 && match (\$4, \"'\"mmcblk\"'\")) print \$4}'">tmpbak\backup_potentialPartitions
 	for /F "tokens=*" %%A in (tmpbak\backup_potentialPartitions) do call:inspectPartition %%A
 	
 	if NOT "!backup_taPartitionName!" == "" (
@@ -92,14 +91,14 @@ echo.
 echo =======================================
 echo  BACKUP TA PARTITION
 echo =======================================
-tools\adb shell su -c "%BB% md5sum !partition! | %BB% grep -o '^^[^^ ]*'">tmpbak\backup_currentPartitionMD5
+tools\adb shell su -c "%BB% md5sum !partition! | %BB% awk {'print \$1'}">tmpbak\backup_currentPartitionMD5
 tools\adb shell su -c "%BB% dd if=!partition! of=/sdcard/backupTA.img"
 
 echo.
 echo =======================================
 echo  INTEGRITY CHECK
 echo =======================================
-tools\adb shell su -c "%BB% md5sum /sdcard/backupTA.img | %BB% grep -o '^[^ ]*'">tmpbak\backup_backupMD5
+tools\adb shell su -c "%BB% md5sum /sdcard/backupTA.img | %BB% awk {'print \$1'}">tmpbak\backup_backupMD5
 set /p backup_currentPartitionMD5=<tmpbak\backup_currentPartitionMD5
 set /p backup_backupMD5=<tmpbak\backup_backupMD5
 verify > nul
@@ -182,6 +181,8 @@ REM #####################
 set backup_currentPartitionMD5=
 set backup_backupMD5=
 set backup_backupPulledMD5=
+set backup_defaultTA=
+set backup_defaultTAvalid=
 set backup_matchSerial=
 set backup_matchMarlin=
 set backup_taPartitionName=

@@ -89,7 +89,7 @@ echo.
 echo =======================================
 echo  COMPARE TA PARTITION WITH BACKUP
 echo =======================================
-tools\adb shell su -c "%BB% md5sum !partition! | %BB% grep -o '^^[^^ ]*'">tmpbak\restore_currentPartitionMD5
+tools\adb shell su -c "%BB% md5sum !partition! | %BB% awk {'print \$1'}">tmpbak\restore_currentPartitionMD5
 set /p restore_currentPartitionMD5=<tmpbak\restore_currentPartitionMD5
 verify > nul
 if "!restore_currentPartitionMD5!" == "!restore_savedBackupMD5!" (
@@ -117,7 +117,7 @@ echo.
 echo =======================================
 echo  INTEGRITY CHECK
 echo =======================================
-tools\adb shell su -c "%BB% md5sum /sdcard/restoreTA.img | %BB% grep -o '^[^ ]*'">tmpbak\restore_pushedBackupMD5
+tools\adb shell su -c "%BB% md5sum /sdcard/restoreTA.img | %BB% awk {'print \$1'}">tmpbak\restore_pushedBackupMD5
 if NOT "%errorlevel%" == "0" goto onRestoreFailed
 set /p restore_pushedBackupMD5=<tmpbak\restore_pushedBackupMD5
 verify > nul
@@ -164,7 +164,7 @@ echo.
 echo =======================================
 echo  COMPARE NEW TA PARTITION WITH BACKUP
 echo =======================================
-tools\adb shell su -c "%BB% md5sum !partition! | %BB% grep -o '^^[^^ ]*'">tmpbak\restore_restoredMD5
+tools\adb shell su -c "%BB% md5sum !partition! | %BB% awk {'print \$1'}">tmpbak\restore_restoredMD5
 if NOT "%restore_dryRun%" == "1" (
 	set /p restore_restoredMD5=<tmpbak\restore_restoredMD5
 	verify > nul
@@ -220,7 +220,7 @@ echo.
 echo =======================================
 echo  REVERT VERIFICATION
 echo =======================================
-tools\adb shell su -c "%BB% md5sum !partition! | %BB% grep -o '^^[^^ ]*'">tmpbak\restore_revertedMD5
+tools\adb shell su -c "%BB% md5sum !partition! | %BB% awk {'print \$1'}">tmpbak\restore_revertedMD5
 if NOT "%restore_dryRun%" == "1" (
 	set /p restore_revertedMD5=<tmpbak\restore_revertedMD5
 ) else (

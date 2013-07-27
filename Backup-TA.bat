@@ -1,13 +1,18 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-set VERSION=v9.5
-if %PROCESSOR_ARCHITECTURE% == x86 (
-	set CHOICE=tools\choice32.exe
-	set CHOICE_TEXT_PARAM=
-) else (
+set VERSION=v9.6
+if exist "%PROGRAMFILES(X86)%" (
 	set CHOICE=tools\choice64.exe
 	set CHOICE_TEXT_PARAM=/m
+) else (
+	if %PROCESSOR_ARCHITECTURE% == x86 (
+		set CHOICE=tools\choice32.exe
+		set CHOICE_TEXT_PARAM=
+	) else (
+		set CHOICE=tools\choice64.exe
+		set CHOICE_TEXT_PARAM=/m
+	)
 )
 cd %~dp0
 if NOT exist tmpbak mkdir tmpbak > nul 2>&1
@@ -43,9 +48,12 @@ set choice=
 call scripts\menu.bat dispose
 call scripts\backup.bat dispose
 call scripts\restore.bat dispose
+call scripts\convert.bat dispose
 
-del /q /s tmpbak\*.*
-if exist tmpbak rmdir tmpbak
+if exist tmpbak (
+	del /q /s tmpbak\*.*
+	rmdir tmpbak
+)
 
 call scripts\busybox.bat dispose
 

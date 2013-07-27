@@ -92,7 +92,17 @@ if "!menu_decision!" == "3" (
 	set menu_decision=0
 )
 if "!menu_decision!" == "4" (
-	call scripts\convert.bat showConvertV4
+	echo.
+	echo =======================================
+	echo  CONVERT V4 BACKUP
+	echo =======================================
+	echo When you continue Backup TA will ask you to copy your v4 backup to a location
+	echo and then convert this backup to make it compatible with the latest version
+	echo of Backup TA.
+	echo.
+	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Are you sure you want to continue?"
+	if errorlevel 2 goto showMenu
+	call scripts\convert.bat convertV4
 	set menu_decision=0
 )
 if "!menu_decision!" == "5" (

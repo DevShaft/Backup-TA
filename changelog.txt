@@ -3,7 +3,7 @@ Backup TA v9.6 (2013-07-27)
 New Features, Improvements
 --------------------------
 - Replaced the convert v4 backup step-by-step guide with an automated process.
-- Enhanced the Windows 64-bits check. Thanks to the feedback of zoonsk@XDA
+- Enhanced the Windows 64-bits check. Thanks to the feedback of zoomsk@XDA
 
 Backup TA v9.5 (2013-07-07)
 ==============================

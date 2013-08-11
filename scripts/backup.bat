@@ -7,30 +7,69 @@ REM #####################
 :inspectPartition
 if "!backup_taPartitionName!" == "-1" goto:eof
 	echo --- %1 ---
-	set /p "=Searching for Serial No..." < nul
-	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c '!backup_serialno!'">tmpbak\backup_matchSerial
-	set /p backup_matchSerial=<tmpbak\backup_matchSerial
-	if "!backup_matchSerial!" == "1" (
+	set /p "=Searching for Operator Identifier..." < nul
+	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c 'OP_ID='">tmpbak\backup_matchOP_ID
+	set /p backup_matchOP_ID=<tmpbak\backup_matchOP_ID
+	if "!backup_matchOP_ID!" == "1" (
 		echo +
 	) else (
 		echo -
 	)
-	set /p "=Searching for Marlin Certificate..." < nul
-	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c -i 'marlin:datacertification'">tmpbak\backup_matchMarlin
-	set /p backup_matchMarlin=<tmpbak\backup_matchMarlin
-	if "!backup_matchMarlin!" == "1" (
+	set /p "=Searching for Operator Name..." < nul
+	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c 'OP_Name='">tmpbak\backup_matchOP_Name
+	set /p backup_matchOP_Name=<tmpbak\backup_matchOP_Name
+	if "!backup_matchOP_Name!" == "1" (
+		echo +
+	) else (
+		echo -
+	)
+	set /p "=Searching for Rooting Status..." < nul
+	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c 'ROOTING_ALLOWED='">tmpbak\backup_matchRootingStatus
+	set /p backup_matchRootingStatus=<tmpbak\backup_matchRootingStatus
+	if "!backup_matchRootingStatus!" == "1" (
+		echo +
+	) else (
+		echo -
+	)
+	set /p "=Searching for S1 Boot..." < nul
+	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c -i 'S1_Boot'">tmpbak\backup_matchS1_Boot
+	set /p backup_matchS1_Boot=<tmpbak\backup_matchS1_Boot
+	if "!backup_matchS1_Boot!" == "1" (
+		echo +
+	) else (
+		echo -
+	)
+	set /p "=Searching for S1 Loader..." < nul
+	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c -i 'S1_Loader'">tmpbak\backup_matchS1_Loader
+	set /p backup_matchS1_Loader=<tmpbak\backup_matchS1_Loader
+	if "!backup_matchS1_Loader!" == "1" (
+		echo +
+	) else (
+		echo -
+	)
+	set /p "=Searching for S1 Hardware Configuration..." < nul
+	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c -i 'S1_HWConf'">tmpbak\backup_matchS1_HWConf
+	set /p backup_matchS1_HWConf=<tmpbak\backup_matchS1_HWConf
+	if "!backup_matchS1_HWConf!" == "1" (
 		echo +
 	) else (
 		echo -
 	)
 
-	if "!backup_matchSerial!" == "1" (
-		if "!backup_matchMarlin!" == "1" (
-			if "!backup_taPartitionName!" == "" (
-				set backup_taPartitionName=%1
-			) else (
-				set backup_taPartitionName=-1
-				
+	if "!backup_matchOP_ID!" == "1" (
+		if "!backup_matchOP_Name!" == "1" (
+			if "!backup_matchRootingStatus!" == "1" (
+				if "!backup_matchS1_Boot!" == "1" (
+					if "!backup_matchS1_Loader!" == "1" (
+						if "!backup_matchS1_HWConf!" == "1" (
+							if "!backup_taPartitionName!" == "" (
+								set backup_taPartitionName=%1
+							) else (
+								set backup_taPartitionName=-1
+							)
+						)
+					)
+				)
 			)
 		)
 	)
@@ -183,8 +222,12 @@ set backup_backupMD5=
 set backup_backupPulledMD5=
 set backup_defaultTA=
 set backup_defaultTAvalid=
-set backup_matchSerial=
-set backup_matchMarlin=
+set backup_matchOP_ID=
+set backup_matchOP_Name=
+set backup_matchRootingStatus=
+set backup_matchS1_Boot=
+set backup_matchS1_Loader=
+set backup_matchS1_HWConf=
 set backup_taPartitionName=
 set backup_TAByName=
 set partition=

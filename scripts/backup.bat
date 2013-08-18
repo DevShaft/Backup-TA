@@ -16,7 +16,7 @@ if "!backup_taPartitionName!" == "-1" goto:eof
 		echo -
 	)
 	set /p "=Searching for Operator Name..." < nul
-	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c 'OP_Name='">tmpbak\backup_matchOP_Name
+	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c 'OP_NAME='">tmpbak\backup_matchOP_Name
 	set /p backup_matchOP_Name=<tmpbak\backup_matchOP_Name
 	if "!backup_matchOP_Name!" == "1" (
 		echo +

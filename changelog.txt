@@ -2,6 +2,7 @@ Backup TA v9.7 (2013-08-18)
 ==============================
 New Features, Improvements
 --------------------------
+- Added better partition inspection which should be more generic and compatible with Sony Xperia devices.
 - Added better serial check by not relying on a serial in the TA partition but store it inside the backup package.
 - Added timestamp and version number inside the backup package for later usage.
 - Added restart option after a successful backup.

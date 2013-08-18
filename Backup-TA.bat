@@ -1,12 +1,12 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-set VERSION=v9.6
+set VERSION=9.7
 if exist "%PROGRAMFILES(X86)%" (
 	set CHOICE=tools\choice64.exe
 	set CHOICE_TEXT_PARAM=/m
 ) else (
-	if %PROCESSOR_ARCHITECTURE% == x86 (
+	if "%PROCESSOR_ARCHITECTURE%" == "x86" (
 		set CHOICE=tools\choice32.exe
 		set CHOICE_TEXT_PARAM=
 	) else (

@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-set VERSION=v9.7
+set VERSION=9.7
 if exist "%PROGRAMFILES(X86)%" (
 	set CHOICE=tools\choice64.exe
 	set CHOICE_TEXT_PARAM=/m

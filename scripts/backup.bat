@@ -98,9 +98,6 @@ if "!backup_defaultTAvalid!" == "1" (
 	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Do you want to perform an extensive search for the TA?"
 	if errorlevel 2 goto onBackupCancelled
 	
-	tools\adb get-serialno>tmpbak\backup_serialno
-	set /p backup_serialno=<tmpbak\backup_serialno
-
 	echo.
 	echo =======================================
 	echo  INSPECTING PARTITIONS
@@ -174,12 +171,14 @@ echo.
 echo =======================================
 echo  PACKAGE BACKUP
 echo =======================================
+tools\adb get-serialno>tmpbak\TA.serial
 echo !partition!>tmpbak\TA.blk
 echo !backup_backupPulledMD5!>tmpbak\TA.md5
-tools\adb shell su -c "%BB% date +%%Y%%m%%d.%%H%%M%%S">tmpbak\backup_timestamp
-set /p backup_timestamp=<tmpbak\backup_timestamp
+echo %VERSION%>tmpbak\TA.version
+tools\adb shell su -c "%BB% date +%%Y%%m%%d.%%H%%M%%S">tmpbak\TA.timestamp
+set /p backup_timestamp=<tmpbak\TA.timestamp
 cd tmpbak
-..\tools\zip a ..\backup\TA-backup-!backup_timestamp!.zip TA.img TA.md5 TA.blk
+..\tools\zip a ..\backup\TA-backup-!backup_timestamp!.zip TA.img TA.md5 TA.blk TA.serial TA.timestamp TA.version
 if NOT "%errorlevel%" == "0" goto onBackupFailed
 cd..
 
@@ -233,6 +232,6 @@ set backup_TAByName=
 set partition=
 
 if "%~1" == "1" del /q /s tmpbak\backup_*.* > nul 2>&1
-
+if "%~1" == "1" del /q /s tmpbak\TA.* > nul 2>&1
 tools\adb shell rm /sdcard/backupTA.img > nul 2>&1
 goto:eof

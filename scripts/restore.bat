@@ -22,6 +22,7 @@ if "!restore_dryRun!" == "1" (
 )
 tools\adb get-serialno>tmpbak\restore_serialno
 set /p restore_serialno=<tmpbak\restore_serialno
+verify > nul
 
 echo.
 echo =======================================
@@ -132,9 +133,12 @@ echo.
 echo =======================================
 echo  SERIAL CHECK
 echo =======================================
-tools\adb shell su -c "%BB% cat /sdcard/restoreTA.img | %BB% grep -m 1 -o !restore_serialno!">tmpbak\restore_backupSerial
-if NOT "%errorlevel%" == "0" goto onRestoreFailed
-set /p restore_backupSerial=<tmpbak\restore_backupSerial
+if NOT exist tmpbak\TA.serial (
+	tools\adb shell su -c "%BB% cat /sdcard/restoreTA.img | %BB% grep -m 1 -o !restore_serialno!">tmpbak\restore_backupSerial
+	if NOT "%errorlevel%" == "0" goto unknownDevice
+	copy tmpbak\restore_backupSerial tmpbak\TA.serial > nul 2>&1
+)
+set /p restore_backupSerial=<tmpbak\TA.serial
 verify > nul
 if NOT "!restore_serialno!" == "!restore_backupSerial!" (
 	goto otherDevice
@@ -144,8 +148,16 @@ goto validDevice
 
 :otherDevice
 echo The backup appears to be from another device.
-%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Are you sure you want to restore the TA Partition?"
+goto invalidConfirmation
+
+:unknownDevice
+echo It is impossible to determine the origin for this backup. The backup could be from another device.
+goto invalidConfirmation
+
+:invalidConfirmation
+%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "This restore may hard-brick your device. Are you sure you want to restore the TA Partition?"
 if errorlevel 2 goto onRestoreCancelled
+goto validDevice
 
 :validDevice
 echo.
@@ -255,18 +267,22 @@ REM #####################
 REM ## EXIT RESTORE
 REM #####################
 :exit
-if NOT "%~1" == "5" call:dispose %~1
+call:dispose %~1
 echo.
-
-if "%~1" == "1" echo *** Restore successful. ***
-if "%~1" == "1" echo *** You must restart the device for the restore to take effect. ***
-
+if "%~1" == "1" (
+	echo *** Restore successful. ***
+	echo *** You must restart the device for the restore to take effect. ***
+	echo.
+	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Do you want to restart the device?"
+	if errorlevel 2 goto:eof
+	tools\adb reboot
+)
 if "%~1" == "2" echo *** Restore cancelled. ***
 if "%~1" == "3" echo *** Restore unsuccessful. ***
-
-if "%~1" == "4" echo *** DO NOT SHUTDOWN OR RESTART THE DEVICE!!! ***
-if "%~1" == "4" echo *** Reverting restore has failed! Contact DevShaft @XDA-forums for guidance. ***
-
+if "%~1" == "4" (
+	echo *** DO NOT SHUTDOWN OR RESTART THE DEVICE!!! ***
+	echo *** Reverting restore has failed! Contact DevShaft @XDA-forums for guidance. ***
+)
 if "%~1" == "5" echo *** Revert successful. Try to restore again. ***
 echo.
 pause
@@ -288,7 +304,7 @@ set restore_serialno=
 set partition=
 
 if "%~1" == "1" del /q /s tmpbak\restore_*.* > nul 2>&1
-
+if "%~1" == "1" del /q /s tmpbak\TA.* > nul 2>&1
 tools\adb shell rm /sdcard/restoreTA.img > nul 2>&1
 tools\adb shell rm /sdcard/revertTA.img > nul 2>&1
 goto:eof

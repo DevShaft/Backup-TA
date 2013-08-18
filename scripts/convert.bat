@@ -69,9 +69,11 @@ REM #####################
 set filename=TA-backup-!convert_timestamp!.zip
 call:dispose %~1
 echo.
-if "%~1" == "1" echo *** Convert successful ***
-if "%~1" == "1" echo *** Your new backup is named '!filename!' ***
-if "%~1" == "1" echo *** It can be found at %CD%\backup ***
+if "%~1" == "1" (
+		echo *** Convert successful ***
+		echo *** Your new backup is named '!filename!' ***
+		echo *** It can be found at %CD%\backup ***
+)
 if "%~1" == "2" echo *** Convert cancelled. ***
 if "%~1" == "3" echo *** Convert unsuccessful. ***
 set filename=

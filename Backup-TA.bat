@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-set VERSION=9.7
+set VERSION=9.8
 if exist "%PROGRAMFILES(X86)%" (
 	set CHOICE=tools\choice64.exe
 	set CHOICE_TEXT_PARAM=/m
@@ -29,6 +29,18 @@ REM ## INITIALIZE
 REM #####################
 :initialize
 cls
+echo.
+echo  [ ------------------------------------------------------------ ]
+echo  [  Backup TA v%VERSION% for Sony Xperia                              ]
+echo  [ ------------------------------------------------------------ ]
+echo  [  Initialization                                              ]
+echo  [                                                              ]
+echo  [  Make sure that you have USB Debugging enabled, you do       ]
+echo  [  allow your computer access by accepting its RSA key         ]
+echo  [  (Android 4.2.2 or higher) and grant this ADB process root   ]
+echo  [  permissions through superuser.                              ]
+echo  [ ------------------------------------------------------------ ]
+echo.
 call scripts\adb.bat wakeDevice
 set PARTITION_BY_NAME=/dev/block/platform/msm_sdcc.1/by-name/TA
 goto:eof

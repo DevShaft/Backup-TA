@@ -2,6 +2,10 @@ set restore_dryRun=
 call:%*
 goto:eof
 
+:hardbrickConfirmation
+%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "This restore may hard-brick your device. Are you sure you want to restore the TA Partition?"
+goto:eof
+
 REM #####################
 REM ## RESTORE DRY
 REM #####################
@@ -28,14 +32,14 @@ echo.
 echo =======================================
 echo  CHOOSE BACKUP TO RESTORE
 echo =======================================
-echo off > tmpbak\restoreList
+echo off > tmpbak\restore_list
 set restore_restoreIndex=0
 for /f "tokens=*" %%D in ('dir/b/o backup\TA-Backup*.zip') do (
 	set /a restore_restoreIndex+=1
-	echo [!restore_restoreIndex!] %%D >> tmpbak\restoreList
+	echo [!restore_restoreIndex!] %%D >> tmpbak\restore_list
 )
-echo [Q] Quit >> tmpbak\restoreList
-type tmpbak\restoreList
+echo [Q] Quit >> tmpbak\restore_list
+type tmpbak\restore_list
 
 :restoreChoose
 set /p restore_restoreChosen=Please make your decision:
@@ -43,8 +47,8 @@ set /p restore_restoreChosen=Please make your decision:
 if "!restore_restoreChosen!" == "q"	goto onRestoreCancelled
 if "!restore_restoreChosen!" == "Q" goto onRestoreCancelled
 
-tools\find "[!restore_restoreChosen!]" < tmpbak\restoreList > tmpbak\restoreItem
-for /f "tokens=2" %%T in (tmpbak\restoreItem) do (
+tools\find "[!restore_restoreChosen!]" < tmpbak\restore_list > tmpbak\restore_item
+for /f "tokens=2" %%T in (tmpbak\restore_item) do (
 	set restore_restoreFile=%%T 
 )
 if "!restore_restoreFile!" == "" goto restoreChoose
@@ -80,7 +84,7 @@ if NOT "%errorlevel%" == "0" goto onRestoreFailed
 set /p restore_backupMD5=<tmpbak\restore_backupMD5
 verify > nul
 if NOT "!restore_savedBackupMD5!" == "!restore_backupMD5!" (
-	echo FAILED
+	echo FAILED - Backup is corrupted.
 	goto onRestoreFailed
 ) else (
 	echo OK
@@ -106,6 +110,9 @@ echo  BACKUP CURRENT TA PARTITION
 echo =======================================
 tools\adb shell su -c "%BB% dd if=!partition! of=/sdcard/revertTA.img && %BB% sync && %BB% sync && %BB% sync && %BB% sync"
 if NOT "%errorlevel%" == "0" goto onRestoreFailed
+tools\adb shell su -c "%BB% ls -l /sdcard/revertTA.img | %BB% awk {'print \$5'}">tmpbak\restore_revertTASize
+set /p restore_revertTASize=<tmpbak\restore_revertTASize
+verify > nul
 
 echo.
 echo =======================================
@@ -118,15 +125,22 @@ echo.
 echo =======================================
 echo  INTEGRITY CHECK
 echo =======================================
+tools\adb shell su -c "%BB% ls -l /sdcard/restoreTA.img | %BB% awk {'print \$5'}">tmpbak\restore_pushedBackupSize
 tools\adb shell su -c "%BB% md5sum /sdcard/restoreTA.img | %BB% awk {'print \$1'}">tmpbak\restore_pushedBackupMD5
 if NOT "%errorlevel%" == "0" goto onRestoreFailed
+set /p restore_pushedBackupSize=<tmpbak\restore_pushedBackupSize
 set /p restore_pushedBackupMD5=<tmpbak\restore_pushedBackupMD5
 verify > nul
 if NOT "!restore_savedBackupMD5!" == "!restore_pushedBackupMD5!" (
-	echo FAILED
+	echo FAILED - Backup has gone corrupted while pushing. Please try again.
 	goto onRestoreFailed
 ) else (
-	echo OK
+	if NOT "!restore_revertTASize!" == "!restore_pushedBackupSize!" (
+		echo FAILED - Backup and TA partition sizes do not match.
+		goto onRestoreFailed
+	) else (
+		echo OK
+	)
 )
 
 echo.
@@ -155,7 +169,7 @@ echo It is impossible to determine the origin for this backup. The backup could 
 goto invalidConfirmation
 
 :invalidConfirmation
-%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "This restore may hard-brick your device. Are you sure you want to restore the TA Partition?"
+call:hardbrickConfirmation
 if errorlevel 2 goto onRestoreCancelled
 goto validDevice
 

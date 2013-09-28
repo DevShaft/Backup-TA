@@ -139,7 +139,7 @@ set /p backup_currentPartitionMD5=<tmpbak\backup_currentPartitionMD5
 set /p backup_backupMD5=<tmpbak\backup_backupMD5
 verify > nul
 if NOT "!backup_currentPartitionMD5!" == "!backup_backupMD5!" (
-	echo FAILED
+	echo FAILED - Backup does not match TA Partition. Please try again.
 	goto onBackupFailed
 ) else (
 	echo OK
@@ -161,7 +161,7 @@ if NOT "%errorlevel%" == "0" goto onBackupFailed
 set /p backup_backupPulledMD5=<tmpbak\backup_backupPulledMD5
 verify > nul
 if NOT "!backup_currentPartitionMD5!" == "!backup_backupPulledMD5!" (
-	echo FAILED
+	echo FAILED - Backup has gone corrupted while pulling. Please try again.
 	goto onBackupFailed
 ) else (
 	echo OK

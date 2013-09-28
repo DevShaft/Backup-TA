@@ -18,6 +18,7 @@ cd %~dp0
 if NOT exist tmpbak mkdir tmpbak > nul 2>&1
 call scripts\license.bat showLicense
 call:initialize
+call scripts\adb.bat wakeDevice
 call scripts\busybox.bat pushBusyBox
 call scripts\root.bat check hasRoot
 if NOT "!hasRoot!" == "1" goto quit
@@ -41,7 +42,6 @@ echo  [  (Android 4.2.2 or higher) and grant this ADB process root   ]
 echo  [  permissions through superuser.                              ]
 echo  [ ------------------------------------------------------------ ]
 echo.
-call scripts\adb.bat wakeDevice
 set PARTITION_BY_NAME=/dev/block/platform/msm_sdcc.1/by-name/TA
 goto:eof
 

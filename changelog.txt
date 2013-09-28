@@ -1,3 +1,12 @@
+Backup TA v9.8 (2013-09-28)
+==============================
+New Features, Improvements
+--------------------------
+- Added extra safeguard which checks whether the backup and TA partition have the same size before doing the actual restore.
+- Added superuser root access check. To make sure ADB is granted root access.
+- Initialization description which tells the user what is required for it to be successful.
+- More verbose output.
+
 Backup TA v9.7 (2013-08-18)
 ==============================
 New Features, Improvements

@@ -1,0 +1,41 @@
+COMPATIBLE DEVICES
+===================
+Most likely all Sony Xperia models up till now are compatible. Sony Ericsson Xperia models however are NOT compatible and will never be.
+The following devices are confirmed being compatible with Backup TA by device owners. When your device is not in the list but is compatible,
+please let me know by sending a mail to devshaft@gmail.com. Thank you.
+
+Confirmed: 
+----------
+Sony Xperia Z1
+Sony Xperia Z Ultra
+Sony Xperia Z
+Sony Xperia ZL
+Sony Xperia ZQ
+Sony Xperia ZR
+Sony Xperia ION
+Sony Xperia S
+Sony Xperia SL
+Sony Xperia SP
+Sony Xperia Acro S
+Sony Xperia T
+Sony Xperia TL
+Sony Xperia TX
+Sony Xperia M
+Sony Xperia V
+Sony Xperia P
+Sony Xperia L
+Sony Xperia U
+Sony Xperia Sola
+Sony Xperia Miro
+Sony Xperia Tipo
+Sony Xperia J
+Sony Xperia E
+Sony Xperia Tablet Z
+
+Most likely: 
+-----------------------
+All Sony Xperia models
+
+Not compatible: 
+--------------
+All Sony Ericsson Xperia models

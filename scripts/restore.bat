@@ -55,14 +55,14 @@ if "!restore_restoreFile!" == "" goto restoreChoose
  
 echo.
 %CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Are you sure you want to restore '!restore_restoreFile!'?"
-if errorlevel 2 goto onRestoreCancelled
+if "!errorlevel!" == "2" goto onRestoreCancelled
  
 echo.
 echo =======================================
 echo  EXTRACT BACKUP
 echo =======================================
 tools\zip x -y backup\!restore_restoreFile! -otmpbak
-if NOT "%errorlevel%" == "0" goto onRestoreFailed
+if NOT "!errorlevel!" == "0" goto onRestoreFailed
 if exist tmpbak\TA.blk (
 	set /p partition=<tmpbak\TA.blk
 ) else (
@@ -80,7 +80,7 @@ set /a restore_savedBackupMD5TrailingSpaces=!restore_savedBackupMD5Len!-32
 for /f "tokens=* delims= " %%a in ("!restore_savedBackupMD5!") do set restore_savedBackupMD5=%%a
 for /l %%a in (1,1,100) do if "!restore_savedBackupMD5:~-1!"==" " set restore_savedBackupMD5=!restore_savedBackupMD5:~0,-!restore_savedBackupMD5TrailingSpaces!
 tools\md5 -l -n tmpbak\TA.img>tmpbak\restore_backupMD5
-if NOT "%errorlevel%" == "0" goto onRestoreFailed
+if NOT "!errorlevel!" == "0" goto onRestoreFailed
 set /p restore_backupMD5=<tmpbak\restore_backupMD5
 verify > nul
 if NOT "!restore_savedBackupMD5!" == "!restore_backupMD5!" (
@@ -109,7 +109,7 @@ echo =======================================
 echo  BACKUP CURRENT TA PARTITION
 echo =======================================
 tools\adb shell su -c "%BB% dd if=!partition! of=/sdcard/revertTA.img && %BB% sync && %BB% sync && %BB% sync && %BB% sync"
-if NOT "%errorlevel%" == "0" goto onRestoreFailed
+if NOT "!errorlevel!" == "0" goto onRestoreFailed
 tools\adb shell su -c "%BB% ls -l /sdcard/revertTA.img | %BB% awk {'print \$5'}">tmpbak\restore_revertTASize
 set /p restore_revertTASize=<tmpbak\restore_revertTASize
 verify > nul
@@ -119,7 +119,7 @@ echo =======================================
 echo  PUSH BACKUP TO SDCARD
 echo =======================================
 tools\adb push tmpbak\TA.img sdcard/restoreTA.img
-if NOT "%errorlevel%" == "0" goto onRestoreFailed
+if NOT "!errorlevel!" == "0" goto onRestoreFailed
 
 echo.
 echo =======================================
@@ -127,7 +127,7 @@ echo  INTEGRITY CHECK
 echo =======================================
 tools\adb shell su -c "%BB% ls -l /sdcard/restoreTA.img | %BB% awk {'print \$5'}">tmpbak\restore_pushedBackupSize
 tools\adb shell su -c "%BB% md5sum /sdcard/restoreTA.img | %BB% awk {'print \$1'}">tmpbak\restore_pushedBackupMD5
-if NOT "%errorlevel%" == "0" goto onRestoreFailed
+if NOT "!errorlevel!" == "0" goto onRestoreFailed
 set /p restore_pushedBackupSize=<tmpbak\restore_pushedBackupSize
 set /p restore_pushedBackupMD5=<tmpbak\restore_pushedBackupMD5
 verify > nul
@@ -149,7 +149,7 @@ echo  SERIAL CHECK
 echo =======================================
 if NOT exist tmpbak\TA.serial (
 	tools\adb shell su -c "%BB% cat /sdcard/restoreTA.img | %BB% grep -m 1 -o !restore_serialno!">tmpbak\restore_backupSerial
-	if NOT "%errorlevel%" == "0" goto unknownDevice
+	if NOT "!errorlevel!" == "0" goto unknownDevice
 	copy tmpbak\restore_backupSerial tmpbak\TA.serial > nul 2>&1
 )
 set /p restore_backupSerial=<tmpbak\TA.serial
@@ -170,7 +170,7 @@ goto invalidConfirmation
 
 :invalidConfirmation
 call:hardbrickConfirmation
-if errorlevel 2 goto onRestoreCancelled
+if "!errorlevel!" == "2" goto onRestoreCancelled
 goto validDevice
 
 :validDevice
@@ -180,7 +180,7 @@ echo  RESTORE BACKUP
 echo =======================================
 if NOT "%restore_dryRun%" == "1" (
 	tools\adb shell su -c "%BB% dd if=/sdcard/restoreTA.img of=!partition! && %BB% sync && %BB% sync && %BB% sync && %BB% sync"
-	if NOT "%errorlevel%" == "0" goto onRestoreFailed
+	if NOT "!errorlevel!" == "0" goto onRestoreFailed
 ) else (
 	echo --- dry run ---
 )
@@ -288,7 +288,7 @@ if "%~1" == "1" (
 	echo *** You must restart the device for the restore to take effect. ***
 	echo.
 	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Do you want to restart the device?"
-	if errorlevel 2 goto:eof
+	if "!errorlevel!" == "2" goto:eof
 	tools\adb reboot
 )
 if "%~1" == "2" echo *** Restore cancelled. ***

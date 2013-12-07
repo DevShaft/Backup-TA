@@ -37,7 +37,7 @@ echo  [ ------------------------------------------------------------ ]
 
 %CHOICE% /c:!menu_choices! %CHOICE_TEXT_PARAM% "Please make your decision:"
 
-set menu_decision=%errorlevel%
+set menu_decision=!errorlevel!
 set menu_currentIndex=
 set menu_choices=
 
@@ -53,7 +53,7 @@ if "!menu_decision!" == "1" (
 	echo in the hope to find it and continue with the backup process.
 	echo.
 	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Are you sure you want to continue?"
-	if errorlevel 2 goto showMenu
+	if "!errorlevel!" == "2" goto showMenu
 	call scripts\backup.bat backupTA
 	set menu_decision=0
 ) 
@@ -71,7 +71,7 @@ if "!menu_decision!" == "2" (
 	echo absolute minimum. 
 	echo.
 	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Are you sure you want to continue?"
-	if errorlevel 2 goto showMenu
+	if"!errorlevel!" == "2" goto showMenu
 	call scripts\restore.bat restoreTA
 	set menu_decision=0
 )
@@ -87,7 +87,7 @@ if "!menu_decision!" == "3" (
 	echo you can test beforehand if your backup is invalid or corrupted.
 	echo.
 	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Are you sure you want to continue?"
-	if errorlevel 2 goto showMenu
+	if "!errorlevel!" == "2" goto showMenu
 	call scripts\restore.bat restoreTAdry
 	set menu_decision=0
 )
@@ -101,7 +101,7 @@ if "!menu_decision!" == "4" (
 	echo of Backup TA.
 	echo.
 	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Are you sure you want to continue?"
-	if errorlevel 2 goto showMenu
+	if "!errorlevel!" == "2" goto showMenu
 	call scripts\convert.bat convertV4
 	set menu_decision=0
 )

@@ -96,7 +96,7 @@ if "!backup_defaultTAvalid!" == "1" (
 	echo Partition not found by name.
 	echo.
 	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Do you want to perform an extensive search for the TA?"
-	if errorlevel 2 goto onBackupCancelled
+	if "!errorlevel!" == "2" goto onBackupCancelled
 	
 	echo.
 	echo =======================================
@@ -150,14 +150,14 @@ echo =======================================
 echo  PULL BACKUP FROM SDCARD
 echo =======================================
 tools\adb pull /sdcard/backupTA.img tmpbak\TA.img
-if NOT "%errorlevel%" == "0" goto onBackupFailed
+if NOT "!errorlevel!" == "0" goto onBackupFailed
 
 echo.
 echo =======================================
 echo  INTEGRITY CHECK
 echo =======================================
 tools\md5 -l -n tmpbak\TA.img>tmpbak\backup_backupPulledMD5
-if NOT "%errorlevel%" == "0" goto onBackupFailed
+if NOT "!errorlevel!" == "0" goto onBackupFailed
 set /p backup_backupPulledMD5=<tmpbak\backup_backupPulledMD5
 verify > nul
 if NOT "!backup_currentPartitionMD5!" == "!backup_backupPulledMD5!" (
@@ -179,7 +179,7 @@ tools\adb shell su -c "%BB% date +%%Y%%m%%d.%%H%%M%%S">tmpbak\TA.timestamp
 set /p backup_timestamp=<tmpbak\TA.timestamp
 cd tmpbak
 ..\tools\zip a ..\backup\TA-backup-!backup_timestamp!.zip TA.img TA.md5 TA.blk TA.serial TA.timestamp TA.version
-if NOT "%errorlevel%" == "0" goto onBackupFailed
+if NOT "!errorlevel!" == "0" goto onBackupFailed
 cd..
 
 call:exit 1

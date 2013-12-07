@@ -1,19 +1,39 @@
 @echo off
 setlocal EnableDelayedExpansion
+set VERSION=9.9
 
-set VERSION=9.8
-if exist "%PROGRAMFILES(X86)%" (
-	set CHOICE=tools\choice64.exe
-	set CHOICE_TEXT_PARAM=/m
+REM #####################
+REM ## CHOICE CHECK
+REM #####################
+choice /T 0 /D Y /C Y /M test > nul 2>&1
+if "!errorlevel!" == "1" (
+	set CHOICE=choice
+	set CHOICE_TEXT_PARAM=/M
 ) else (
-	if "%PROCESSOR_ARCHITECTURE%" == "x86" (
-		set CHOICE=tools\choice32.exe
+	choice /T 0 /D Y /C Y test > nul 2>&1
+	if "!errorlevel!" == "1" (
+		set CHOICE=choice
 		set CHOICE_TEXT_PARAM=
 	) else (
-		set CHOICE=tools\choice64.exe
-		set CHOICE_TEXT_PARAM=/m
+		tools\choice64.exe /T 0 /D Y /C Y /M test > nul 2>&1
+		if "!errorlevel!" == "1" (
+			set CHOICE=tools\choice64.exe
+			set CHOICE_TEXT_PARAM=/M
+		) else (
+			tools\choice32.exe /TY,1 /CY > nul 2>&1
+			if "!errorlevel!" == "1" (
+				set CHOICE=tools\choice32.exe
+			) else (
+				tools\choice32_alt.exe /T 0 /D Y /C Y /M test > nul 2>&1
+				if "!errorlevel!" == "1" (
+					set CHOICE=tools\choice32_2.exe
+					set CHOICE_TEXT_PARAM=/M
+				)
+			)
+		)
 	)
 )
+
 cd %~dp0
 if NOT exist tmpbak mkdir tmpbak > nul 2>&1
 call scripts\license.bat showLicense
@@ -38,8 +58,8 @@ echo  [  Initialization                                              ]
 echo  [                                                              ]
 echo  [  Make sure that you have USB Debugging enabled, you do       ]
 echo  [  allow your computer ADB access by accepting its RSA key     ]
-echo  [  (Android 4.2.2 or higher) and grant this ADB process root   ]
-echo  [  permissions through superuser.                              ]
+echo  [  (only needed for Android 4.2.2 or higher) and grant this    ]
+echo  [  ADB process root permissions through superuser.             ]
 echo  [ ------------------------------------------------------------ ]
 echo.
 set PARTITION_BY_NAME=/dev/block/platform/msm_sdcc.1/by-name/TA

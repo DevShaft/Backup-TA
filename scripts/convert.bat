@@ -28,7 +28,7 @@ if NOT exist convert-this mkdir convert-this > nul 2>&1
 echo Copy your 'TA.img' file to the %CD%\convert-this\ folder.
 echo.
 %CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Are you ready to continue?"
-if errorlevel 2 goto onConvertCancelled
+if "!errorlevel!" == "2" goto onConvertCancelled
 if NOT exist convert-this\TA.img (
 	echo.
 	echo There is no 'TA.img' file found inside the 'convert-this' folder.
@@ -43,7 +43,7 @@ tools\adb shell su -c "%BB% date +%%Y%%m%%d.%%H%%M%%S">tmpbak\convert_timestamp
 set /p convert_timestamp=<tmpbak\convert_timestamp
 cd convert-this
 ..\tools\zip a ..\backup\TA-backup-!convert_timestamp!.zip TA.img TA.md5
-if NOT "%errorlevel%" == "0" goto onConvertFailed
+if NOT "!errorlevel!" == "0" goto onConvertFailed
 cd..
 call:exit 1
 goto:eof

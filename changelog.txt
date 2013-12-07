@@ -1,3 +1,9 @@
+Backup TA v9.9 (2013-12-07)
+==============================
+New Features, Improvements
+--------------------------
+- Changed the way to determine which choice program to use and added alternative 32bits choice program. Should fix an OS compatibility issue some users were having.
+
 Backup TA v9.8 (2013-09-28)
 ==============================
 New Features, Improvements

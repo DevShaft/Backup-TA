@@ -71,7 +71,7 @@ if "!menu_decision!" == "2" (
 	echo absolute minimum. 
 	echo.
 	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Are you sure you want to continue?"
-	if"!errorlevel!" == "2" goto showMenu
+	if "!errorlevel!" == "2" goto showMenu
 	call scripts\restore.bat restoreTA
 	set menu_decision=0
 )

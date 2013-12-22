@@ -25,6 +25,7 @@ Sony Xperia V
 Sony Xperia P
 Sony Xperia L
 Sony Xperia U
+Sony Xperia Go
 Sony Xperia Sola
 Sony Xperia Miro
 Sony Xperia Tipo

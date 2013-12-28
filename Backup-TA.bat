@@ -26,7 +26,7 @@ if "!errorlevel!" == "1" (
 			) else (
 				tools\choice32_alt.exe /T 0 /D Y /C Y /M test > nul 2>&1
 				if "!errorlevel!" == "1" (
-					set CHOICE=tools\choice32_2.exe
+					set CHOICE=tools\choice32_alt.exe
 					set CHOICE_TEXT_PARAM=/M
 				)
 			)

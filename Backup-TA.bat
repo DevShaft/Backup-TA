@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableDelayedExpansion
-set VERSION=9.9
+set VERSION=9.10
 
 REM #####################
 REM ## CHOICE CHECK
@@ -52,7 +52,7 @@ REM #####################
 cls
 echo.
 echo  [ ------------------------------------------------------------ ]
-echo  [  Backup TA v%VERSION% for Sony Xperia                              ]
+echo  [  Backup TA v%VERSION% for Sony Xperia                             ]
 echo  [ ------------------------------------------------------------ ]
 echo  [  Initialization                                              ]
 echo  [                                                              ]

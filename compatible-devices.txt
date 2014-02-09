@@ -1,4 +1,4 @@
-COMPATIBLE DEVICES (2013-10-13)
+COMPATIBLE DEVICES (2014-02-09)
 ===============================
 Most likely all Sony Xperia models up till now are compatible. Sony Ericsson Xperia models however are NOT compatible 
 and will never be. The following devices are confirmed being compatible with Backup TA by device owners. When your 

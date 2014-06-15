@@ -5,7 +5,7 @@ REM #####################
 REM ## ROOT CHECK
 REM #####################
 :check
-set /p "=Checking for root..." < nul
+set /p "=Checking for SU binary..." < nul
 tools\adb shell %BB% ls /system/bin/su>tmpbak\su
 set /p su=<tmpbak\su
 if NOT "!su!" == "[1;32m/system/bin/su[0m" (
@@ -13,10 +13,10 @@ if NOT "!su!" == "[1;32m/system/bin/su[0m" (
 	set /p su=<tmpbak\su
 	if NOT "!su!" == "[1;32m/system/xbin/su[0m" (
 		echo FAILED
-		goto:eof
+	) else (
+		echo OK
 	)
 )
-echo OK
 set /p "=Requesting root permissions..." < nul
 tools\adb shell su -c "%BB% echo true">tmpbak\rootPermission
 set /p rootPermission=<tmpbak\rootPermission

@@ -27,7 +27,7 @@ echo  [  !menu_currentIndex!. Restore dry-run                                   
 set /a menu_currentIndex+=1 >nul
 set menu_choices=!menu_choices!!menu_currentIndex!
 
-echo  [  !menu_currentIndex!. Convert v4 backup                                        ]
+echo  [  !menu_currentIndex!. Convert TA.img                                           ]
 
 set /a menu_currentIndex+=1 >nul
 set menu_choices=!menu_choices!!menu_currentIndex!
@@ -94,15 +94,15 @@ if "!menu_decision!" == "3" (
 if "!menu_decision!" == "4" (
 	echo.
 	echo =======================================
-	echo  CONVERT V4 BACKUP
+	echo  CONVERT TA.IMG
 	echo =======================================
-	echo When you continue Backup TA will ask you to copy your v4 backup to a location
+	echo When you continue Backup TA will ask you to copy your TA.img file to a location
 	echo and then convert this backup to make it compatible with the latest version
 	echo of Backup TA.
 	echo.
 	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Are you sure you want to continue?"
 	if "!errorlevel!" == "2" goto showMenu
-	call scripts\convert.bat convertV4
+	call scripts\convert.bat convertRawTA
 	set menu_decision=0
 )
 if "!menu_decision!" == "5" (

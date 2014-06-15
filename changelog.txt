@@ -1,3 +1,17 @@
+Backup TA v9.11 (2014-06-15)
+==============================
+New Features, Improvements
+--------------------------
+- Renamed 'Convert v4' to 'Convert TA.img'
+- Renamed 'Checking for root...' to 'Checking for SU binary'
+- When backup was made from an unknown device block, the tool will first check for the existence of '/dev/block/platform/msm_sdcc.1/by-name/TA' as the destination for the restore before using '/dev/block/mmcblk0p1' as the destination. 3
+
+Fixed Bugs
+--------------------------
+- Execute all Windows executables with extension to prevent command not found issues on some systems.
+- SU binary check failure does not prevent the request for root permissions anymore, in case the SU binary is at an unknown location but indeed callable.
+- Changed the order in which the different CHOICE programs are tried in order to hopefully workaround issues on some systems.
+
 Backup TA v9.10 (2013-12-28)
 ==============================
 New Features, Improvements

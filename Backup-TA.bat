@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableDelayedExpansion
-set VERSION=9.10
+set VERSION=9.11
 
 REM #####################
 REM ## CHOICE CHECK
@@ -15,20 +15,20 @@ if "!errorlevel!" == "1" (
 		set CHOICE=choice
 		set CHOICE_TEXT_PARAM=
 	) else (
-		tools\choice64.exe /T 0 /D Y /C Y /M test > nul 2>&1
+		tools\choice32.exe /TY,1 /CY > nul 2>&1
 		if "!errorlevel!" == "1" (
-			set CHOICE=tools\choice64.exe
-			set CHOICE_TEXT_PARAM=/M
+			set CHOICE=tools\choice32.exe
 		) else (
-			tools\choice32.exe /TY,1 /CY > nul 2>&1
+			tools\choice32_alt.exe /T 0 /D Y /C Y /M test > nul 2>&1
 			if "!errorlevel!" == "1" (
-				set CHOICE=tools\choice32.exe
+				set CHOICE=tools\choice32_alt.exe
+				set CHOICE_TEXT_PARAM=/M
 			) else (
-				tools\choice32_alt.exe /T 0 /D Y /C Y /M test > nul 2>&1
+				tools\choice64.exe /T 0 /D Y /C Y /M test > nul 2>&1
 				if "!errorlevel!" == "1" (
-					set CHOICE=tools\choice32_alt.exe
+					set CHOICE=tools\choice64.exe
 					set CHOICE_TEXT_PARAM=/M
-				)
+				) 
 			)
 		)
 	)

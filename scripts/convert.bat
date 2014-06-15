@@ -4,21 +4,7 @@ goto:eof
 REM #####################
 REM ## CONVERT
 REM #####################
-:showConvertV4
-echo.
-echo =======================================
-echo  INSTRUCTIONS CONVERTING v4 BACKUP
-echo =======================================
-echo  1. Make sure the image (backup file) is named TA.img
-echo  2. Make a new file called TA.md5 and in this file save the MD5 hash of TA.img.
-echo  3. ZIP both TA.img and TA.md5 in a ZIP file called TA-backup.zip
-echo  4. Save this ZIP file in the 'Backup-TA\backup' folder.
-echo.
-pause
-call:exit
-goto:eof
-
-:convertV4
+:convertRawTA
 echo.
 echo =======================================
 echo  PROVIDE BACKUP
@@ -34,15 +20,15 @@ if NOT exist convert-this\TA.img (
 	echo There is no 'TA.img' file found inside the 'convert-this' folder.
 	goto copyTAFile
 )
-tools\md5 -l -n convert-this\TA.img>convert-this\TA.md5
+tools\md5.exe -l -n convert-this\TA.img>convert-this\TA.md5
 echo.
 echo =======================================
 echo  PACKAGE BACKUP
 echo =======================================
-tools\adb shell su -c "%BB% date +%%Y%%m%%d.%%H%%M%%S">tmpbak\convert_timestamp
+tools\adb.exe shell su -c "%BB% date +%%Y%%m%%d.%%H%%M%%S">tmpbak\convert_timestamp
 set /p convert_timestamp=<tmpbak\convert_timestamp
 cd convert-this
-..\tools\zip a ..\backup\TA-backup-!convert_timestamp!.zip TA.img TA.md5
+..\tools\zip.exe a ..\backup\TA-backup-!convert_timestamp!.zip TA.img TA.md5
 if NOT "!errorlevel!" == "0" goto onConvertFailed
 cd..
 call:exit 1
@@ -91,7 +77,6 @@ if "%~1" == "1" (
 	
 	if exist convert-this (
 		del /q /s convert-this\*.*
-		rmdir convert-this
 	)
 )
 goto:eof

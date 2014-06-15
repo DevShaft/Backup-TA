@@ -8,7 +8,7 @@ REM #####################
 if "!backup_taPartitionName!" == "-1" goto:eof
 	echo --- %1 ---
 	set /p "=Searching for Operator Identifier..." < nul
-	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c 'OP_ID='">tmpbak\backup_matchOP_ID
+	tools\adb.exe shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c 'OP_ID='">tmpbak\backup_matchOP_ID
 	set /p backup_matchOP_ID=<tmpbak\backup_matchOP_ID
 	if "!backup_matchOP_ID!" == "1" (
 		echo +
@@ -16,7 +16,7 @@ if "!backup_taPartitionName!" == "-1" goto:eof
 		echo -
 	)
 	set /p "=Searching for Operator Name..." < nul
-	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c 'OP_NAME='">tmpbak\backup_matchOP_Name
+	tools\adb.exe shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c 'OP_NAME='">tmpbak\backup_matchOP_Name
 	set /p backup_matchOP_Name=<tmpbak\backup_matchOP_Name
 	if "!backup_matchOP_Name!" == "1" (
 		echo +
@@ -24,7 +24,7 @@ if "!backup_taPartitionName!" == "-1" goto:eof
 		echo -
 	)
 	set /p "=Searching for Rooting Status..." < nul
-	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c 'ROOTING_ALLOWED='">tmpbak\backup_matchRootingStatus
+	tools\adb.exe shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c 'ROOTING_ALLOWED='">tmpbak\backup_matchRootingStatus
 	set /p backup_matchRootingStatus=<tmpbak\backup_matchRootingStatus
 	if "!backup_matchRootingStatus!" == "1" (
 		echo +
@@ -32,7 +32,7 @@ if "!backup_taPartitionName!" == "-1" goto:eof
 		echo -
 	)
 	set /p "=Searching for S1 Boot..." < nul
-	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c -i 'S1_Boot'">tmpbak\backup_matchS1_Boot
+	tools\adb.exe shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c -i 'S1_Boot'">tmpbak\backup_matchS1_Boot
 	set /p backup_matchS1_Boot=<tmpbak\backup_matchS1_Boot
 	if "!backup_matchS1_Boot!" == "1" (
 		echo +
@@ -40,7 +40,7 @@ if "!backup_taPartitionName!" == "-1" goto:eof
 		echo -
 	)
 	set /p "=Searching for S1 Loader..." < nul
-	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c -i 'S1_Loader'">tmpbak\backup_matchS1_Loader
+	tools\adb.exe shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c -i 'S1_Loader'">tmpbak\backup_matchS1_Loader
 	set /p backup_matchS1_Loader=<tmpbak\backup_matchS1_Loader
 	if "!backup_matchS1_Loader!" == "1" (
 		echo +
@@ -48,7 +48,7 @@ if "!backup_taPartitionName!" == "-1" goto:eof
 		echo -
 	)
 	set /p "=Searching for S1 Hardware Configuration..." < nul
-	tools\adb shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c -i 'S1_HWConf'">tmpbak\backup_matchS1_HWConf
+	tools\adb.exe shell su -c "%BB% cat /dev/block/%1 | %BB% grep -s -m 1 -c -i 'S1_HWConf'">tmpbak\backup_matchS1_HWConf
 	set /p backup_matchS1_HWConf=<tmpbak\backup_matchS1_HWConf
 	if "!backup_matchS1_HWConf!" == "1" (
 		echo +
@@ -85,9 +85,9 @@ echo.
 echo =======================================
 echo  FIND TA PARTITION
 echo =======================================
-tools\adb shell su -c "%BB% ls -l %PARTITION_BY_NAME% | %BB% awk '{print \$11}'">tmpbak\backup_defaultTA
+tools\adb.exe shell su -c "%BB% ls -l %PARTITION_BY_NAME% | %BB% awk '{print \$11}'">tmpbak\backup_defaultTA
 set /p backup_defaultTA=<tmpbak\backup_defaultTA
-tools\adb shell su -c "if [ -b '!backup_defaultTA!' ]; then echo '1'; else echo '0'; fi">tmpbak\backup_defaultTAvalid
+tools\adb.exe shell su -c "if [ -b '!backup_defaultTA!' ]; then echo '1'; else echo '0'; fi">tmpbak\backup_defaultTAvalid
 set /p backup_defaultTAvalid=<tmpbak\backup_defaultTAvalid
 if "!backup_defaultTAvalid!" == "1" (
 	set partition=!backup_defaultTA!
@@ -103,7 +103,7 @@ if "!backup_defaultTAvalid!" == "1" (
 	echo  INSPECTING PARTITIONS
 	echo =======================================
 	set backup_taPartitionName=
-	tools\adb shell su -c "%BB% cat /proc/partitions | %BB% awk '{if (\$3<=9999 && match (\$4, \"'\"mmcblk\"'\")) print \$4}'">tmpbak\backup_potentialPartitions
+	tools\adb.exe shell su -c "%BB% cat /proc/partitions | %BB% awk '{if (\$3<=9999 && match (\$4, \"'\"mmcblk\"'\")) print \$4}'">tmpbak\backup_potentialPartitions
 	for /F "tokens=*" %%A in (tmpbak\backup_potentialPartitions) do call:inspectPartition %%A
 	
 	if NOT "!backup_taPartitionName!" == "" (
@@ -127,14 +127,14 @@ echo.
 echo =======================================
 echo  BACKUP TA PARTITION
 echo =======================================
-tools\adb shell su -c "%BB% md5sum !partition! | %BB% awk {'print \$1'}">tmpbak\backup_currentPartitionMD5
-tools\adb shell su -c "%BB% dd if=!partition! of=/sdcard/backupTA.img"
+tools\adb.exe shell su -c "%BB% md5sum !partition! | %BB% awk {'print \$1'}">tmpbak\backup_currentPartitionMD5
+tools\adb.exe shell su -c "%BB% dd if=!partition! of=/sdcard/backupTA.img"
 
 echo.
 echo =======================================
 echo  INTEGRITY CHECK
 echo =======================================
-tools\adb shell su -c "%BB% md5sum /sdcard/backupTA.img | %BB% awk {'print \$1'}">tmpbak\backup_backupMD5
+tools\adb.exe shell su -c "%BB% md5sum /sdcard/backupTA.img | %BB% awk {'print \$1'}">tmpbak\backup_backupMD5
 set /p backup_currentPartitionMD5=<tmpbak\backup_currentPartitionMD5
 set /p backup_backupMD5=<tmpbak\backup_backupMD5
 verify > nul
@@ -149,14 +149,14 @@ echo.
 echo =======================================
 echo  PULL BACKUP FROM SDCARD
 echo =======================================
-tools\adb pull /sdcard/backupTA.img tmpbak\TA.img
+tools\adb.exe pull /sdcard/backupTA.img tmpbak\TA.img
 if NOT "!errorlevel!" == "0" goto onBackupFailed
 
 echo.
 echo =======================================
 echo  INTEGRITY CHECK
 echo =======================================
-tools\md5 -l -n tmpbak\TA.img>tmpbak\backup_backupPulledMD5
+tools\md5.exe -l -n tmpbak\TA.img>tmpbak\backup_backupPulledMD5
 if NOT "!errorlevel!" == "0" goto onBackupFailed
 set /p backup_backupPulledMD5=<tmpbak\backup_backupPulledMD5
 verify > nul
@@ -171,14 +171,14 @@ echo.
 echo =======================================
 echo  PACKAGE BACKUP
 echo =======================================
-tools\adb get-serialno>tmpbak\TA.serial
+tools\adb.exe get-serialno>tmpbak\TA.serial
 echo !partition!>tmpbak\TA.blk
 echo !backup_backupPulledMD5!>tmpbak\TA.md5
 echo %VERSION%>tmpbak\TA.version
-tools\adb shell su -c "%BB% date +%%Y%%m%%d.%%H%%M%%S">tmpbak\TA.timestamp
+tools\adb.exe shell su -c "%BB% date +%%Y%%m%%d.%%H%%M%%S">tmpbak\TA.timestamp
 set /p backup_timestamp=<tmpbak\TA.timestamp
 cd tmpbak
-..\tools\zip a ..\backup\TA-backup-!backup_timestamp!.zip TA.img TA.md5 TA.blk TA.serial TA.timestamp TA.version
+..\tools\zip.exe a ..\backup\TA-backup-!backup_timestamp!.zip TA.img TA.md5 TA.blk TA.serial TA.timestamp TA.version
 if NOT "!errorlevel!" == "0" goto onBackupFailed
 cd..
 
@@ -233,5 +233,5 @@ set partition=
 
 if "%~1" == "1" del /q /s tmpbak\backup_*.* > nul 2>&1
 if "%~1" == "1" del /q /s tmpbak\TA.* > nul 2>&1
-tools\adb shell rm /sdcard/backupTA.img > nul 2>&1
+tools\adb.exe shell rm /sdcard/backupTA.img > nul 2>&1
 goto:eof

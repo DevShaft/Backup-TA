@@ -24,7 +24,7 @@ echo.
 if "!restore_dryRun!" == "1" (
 	echo --- Restore dry run ---
 )
-tools\adb get-serialno>tmpbak\restore_serialno
+tools\adb.exe get-serialno>tmpbak\restore_serialno
 set /p restore_serialno=<tmpbak\restore_serialno
 verify > nul
 
@@ -61,12 +61,20 @@ echo.
 echo =======================================
 echo  EXTRACT BACKUP
 echo =======================================
-tools\zip x -y backup\!restore_restoreFile! -otmpbak
+tools\zip.exe x -y backup\!restore_restoreFile! -otmpbak
 if NOT "!errorlevel!" == "0" goto onRestoreFailed
 if exist tmpbak\TA.blk (
 	set /p partition=<tmpbak\TA.blk
 ) else (
-	set partition=/dev/block/mmcblk0p1
+	tools\adb.exe shell su -c "%BB% ls -l %PARTITION_BY_NAME% | %BB% awk '{print \$11}'">tmpbak\restore_defaultTA
+	set /p restore_defaultTA=<tmpbak\restore_defaultTA
+	tools\adb.exe shell su -c "if [ -b '!restore_defaultTA!' ]; then echo '1'; else echo '0'; fi">tmpbak\restore_defaultTAvalid
+	set /p restore_defaultTAvalid=<tmpbak\restore_defaultTAvalid
+	if "!restore_defaultTAvalid!" == "1" (
+		set partition=%PARTITION_BY_NAME%
+	) else (
+		set partition=/dev/block/mmcblk0p1
+	)
 )
 
 echo.
@@ -79,7 +87,7 @@ call scripts\string-util.bat strlen restore_savedBackupMD5Len restore_savedBacku
 set /a restore_savedBackupMD5TrailingSpaces=!restore_savedBackupMD5Len!-32
 for /f "tokens=* delims= " %%a in ("!restore_savedBackupMD5!") do set restore_savedBackupMD5=%%a
 for /l %%a in (1,1,100) do if "!restore_savedBackupMD5:~-1!"==" " set restore_savedBackupMD5=!restore_savedBackupMD5:~0,-!restore_savedBackupMD5TrailingSpaces!
-tools\md5 -l -n tmpbak\TA.img>tmpbak\restore_backupMD5
+tools\md5.exe -l -n tmpbak\TA.img>tmpbak\restore_backupMD5
 if NOT "!errorlevel!" == "0" goto onRestoreFailed
 set /p restore_backupMD5=<tmpbak\restore_backupMD5
 verify > nul
@@ -94,7 +102,7 @@ echo.
 echo =======================================
 echo  COMPARE TA PARTITION WITH BACKUP
 echo =======================================
-tools\adb shell su -c "%BB% md5sum !partition! | %BB% awk {'print \$1'}">tmpbak\restore_currentPartitionMD5
+tools\adb.exe shell su -c "%BB% md5sum !partition! | %BB% awk {'print \$1'}">tmpbak\restore_currentPartitionMD5
 set /p restore_currentPartitionMD5=<tmpbak\restore_currentPartitionMD5
 verify > nul
 if "!restore_currentPartitionMD5!" == "!restore_savedBackupMD5!" (
@@ -108,9 +116,9 @@ echo.
 echo =======================================
 echo  BACKUP CURRENT TA PARTITION
 echo =======================================
-tools\adb shell su -c "%BB% dd if=!partition! of=/sdcard/revertTA.img && %BB% sync && %BB% sync && %BB% sync && %BB% sync"
+tools\adb.exe shell su -c "%BB% dd if=!partition! of=/sdcard/revertTA.img && %BB% sync && %BB% sync && %BB% sync && %BB% sync"
 if NOT "!errorlevel!" == "0" goto onRestoreFailed
-tools\adb shell su -c "%BB% ls -l /sdcard/revertTA.img | %BB% awk {'print \$5'}">tmpbak\restore_revertTASize
+tools\adb.exe shell su -c "%BB% ls -l /sdcard/revertTA.img | %BB% awk {'print \$5'}">tmpbak\restore_revertTASize
 set /p restore_revertTASize=<tmpbak\restore_revertTASize
 verify > nul
 
@@ -118,15 +126,15 @@ echo.
 echo =======================================
 echo  PUSH BACKUP TO SDCARD
 echo =======================================
-tools\adb push tmpbak\TA.img sdcard/restoreTA.img
+tools\adb.exe push tmpbak\TA.img sdcard/restoreTA.img
 if NOT "!errorlevel!" == "0" goto onRestoreFailed
 
 echo.
 echo =======================================
 echo  INTEGRITY CHECK
 echo =======================================
-tools\adb shell su -c "%BB% ls -l /sdcard/restoreTA.img | %BB% awk {'print \$5'}">tmpbak\restore_pushedBackupSize
-tools\adb shell su -c "%BB% md5sum /sdcard/restoreTA.img | %BB% awk {'print \$1'}">tmpbak\restore_pushedBackupMD5
+tools\adb.exe shell su -c "%BB% ls -l /sdcard/restoreTA.img | %BB% awk {'print \$5'}">tmpbak\restore_pushedBackupSize
+tools\adb.exe shell su -c "%BB% md5sum /sdcard/restoreTA.img | %BB% awk {'print \$1'}">tmpbak\restore_pushedBackupMD5
 if NOT "!errorlevel!" == "0" goto onRestoreFailed
 set /p restore_pushedBackupSize=<tmpbak\restore_pushedBackupSize
 set /p restore_pushedBackupMD5=<tmpbak\restore_pushedBackupMD5
@@ -148,7 +156,7 @@ echo =======================================
 echo  SERIAL CHECK
 echo =======================================
 if NOT exist tmpbak\TA.serial (
-	tools\adb shell su -c "%BB% cat /sdcard/restoreTA.img | %BB% grep -m 1 -o !restore_serialno!">tmpbak\restore_backupSerial
+	tools\adb.exe shell su -c "%BB% cat /sdcard/restoreTA.img | %BB% grep -m 1 -o !restore_serialno!">tmpbak\restore_backupSerial
 	if NOT "!errorlevel!" == "0" goto unknownDevice
 	copy tmpbak\restore_backupSerial tmpbak\TA.serial > nul 2>&1
 )
@@ -179,18 +187,18 @@ echo =======================================
 echo  RESTORE BACKUP
 echo =======================================
 if NOT "%restore_dryRun%" == "1" (
-	tools\adb shell su -c "%BB% dd if=/sdcard/restoreTA.img of=!partition! && %BB% sync && %BB% sync && %BB% sync && %BB% sync"
+	tools\adb.exe shell su -c "%BB% dd if=/sdcard/restoreTA.img of=!partition! && %BB% sync && %BB% sync && %BB% sync && %BB% sync"
 	if NOT "!errorlevel!" == "0" goto onRestoreFailed
 ) else (
 	echo --- dry run ---
 )
-tools\adb shell su -c "rm /sdcard/restoreTA.img"
+tools\adb.exe shell su -c "rm /sdcard/restoreTA.img"
 
 echo.
 echo =======================================
 echo  COMPARE NEW TA PARTITION WITH BACKUP
 echo =======================================
-tools\adb shell su -c "%BB% md5sum !partition! | %BB% awk {'print \$1'}">tmpbak\restore_restoredMD5
+tools\adb.exe shell su -c "%BB% md5sum !partition! | %BB% awk {'print \$1'}">tmpbak\restore_restoredMD5
 if NOT "%restore_dryRun%" == "1" (
 	set /p restore_restoredMD5=<tmpbak\restore_restoredMD5
 	verify > nul
@@ -239,14 +247,14 @@ echo =======================================
 echo  REVERT RESTORE
 echo =======================================
 if NOT "%restore_dryRun%" == "1" (
-	tools\adb shell su -c "%BB% dd if=/sdcard/revertTA.img of=%partition% && %BB% sync && %BB% sync && %BB% sync && %BB% sync"
+	tools\adb.exe shell su -c "%BB% dd if=/sdcard/revertTA.img of=%partition% && %BB% sync && %BB% sync && %BB% sync && %BB% sync"
 )
 
 echo.
 echo =======================================
 echo  REVERT VERIFICATION
 echo =======================================
-tools\adb shell su -c "%BB% md5sum !partition! | %BB% awk {'print \$1'}">tmpbak\restore_revertedMD5
+tools\adb.exe shell su -c "%BB% md5sum !partition! | %BB% awk {'print \$1'}">tmpbak\restore_revertedMD5
 if NOT "%restore_dryRun%" == "1" (
 	set /p restore_revertedMD5=<tmpbak\restore_revertedMD5
 ) else (
@@ -266,7 +274,7 @@ REM #####################
 REM ## RESTORE REVERT FAILED
 REM #####################
 :onRestoreRevertFailed
-tools\adb pull /sdcard/revertTA.img tmpbak\revertTA.img
+tools\adb.exe pull /sdcard/revertTA.img tmpbak\revertTA.img
 call:exit 4
 goto:eof
 
@@ -289,7 +297,7 @@ if "%~1" == "1" (
 	echo.
 	%CHOICE% /c:yn %CHOICE_TEXT_PARAM% "Do you want to restart the device?"
 	if "!errorlevel!" == "2" goto:eof
-	tools\adb reboot
+	tools\adb.exe reboot
 )
 if "%~1" == "2" echo *** Restore cancelled. ***
 if "%~1" == "3" echo *** Restore unsuccessful. ***
@@ -319,6 +327,6 @@ set partition=
 
 if "%~1" == "1" del /q /s tmpbak\restore_*.* > nul 2>&1
 if "%~1" == "1" del /q /s tmpbak\TA.* > nul 2>&1
-tools\adb shell rm /sdcard/restoreTA.img > nul 2>&1
-tools\adb shell rm /sdcard/revertTA.img > nul 2>&1
+tools\adb.exe shell rm /sdcard/restoreTA.img > nul 2>&1
+tools\adb.exe shell rm /sdcard/revertTA.img > nul 2>&1
 goto:eof

@@ -1,5 +1,7 @@
 #!/bin/bash 
 
+TMP=../../tmpbak
+
 sudo adb kill-server
 sudo adb start-server
 adb wait-for-device 
@@ -8,7 +10,9 @@ adb wait-for-device
 
 partition=`./find.sh`
 
-#if empty, abort
+echo =======================================
+echo  FIND TA PARTITION
+echo =======================================
 echo partition $partition
 
 if [[ $partition == "" ]]
@@ -17,21 +21,17 @@ then
 	exit -1
 fi
 
-./busybox-off.sh
-#debug
-exit -1
-
 echo =======================================
 echo  BACKUP TA PARTITION
 echo =======================================
-backup_currentPartitionMD5=`adb shell su -c "$BB md5 $partition" | awk {'print $1'}`
+backup_currentPartitionMD5=`adb shell su -c "$BB md5sum $partition" | awk {'print $1'}`
 adb shell su -c "$BB dd if=$partition of=/sdcard/backupTA.img"
 
 echo
 echo =======================================
 echo  INTEGRITY CHECK
 echo =======================================
-backup_backupMD5=`adb shell su -c "$BB md5 /sdcard/backupTA.img" | awk {'print $1'}
+backup_backupMD5=`adb shell su -c "$BB md5sum /sdcard/backupTA.img" | awk {'print $1'}`
 
 if [ "$backup_currentPartitionMD5" != "$backup_backupMD5" ]
 then
@@ -41,21 +41,29 @@ then
 	exit 1
 fi
 
+if [ -d $TMP ]
+then
+	mkdir $TMP
+fi
+
 echo 
 echo =======================================
 echo  PULL BACKUP FROM SDCARD
 echo =======================================
-adb pull /sdcard/backupTA.img tmpbak\TA.img
+adb pull /sdcard/backupTA.img $TMP/TA.img
 
 echo 
 echo =======================================
 echo  INTEGRITY CHECK
 echo =======================================
-localmd5=`md5sum tmpbak\TA.img`
+localmd5=`md5sum $TMP/TA.img | awk {'print $1'} `
 
-if [ "$localmd5" != "$backup_backupPulledMD5" ]
+if [ "$localmd5" != "$backup_backupMD5" ]
 then
 	echo FAILED - Backup has gone corrupted while pulling. Please try again.
+	echo $backup_currentPartitionMD5
+	echo $backup_backupMD5
+	echo $localmd5
 	exit 1
 fi
 
@@ -65,5 +73,20 @@ echo  PACKAGE BACKUP
 echo =======================================
 serial=`adb get-serialno`
 
-cd tmpbak
-echo TODO ..\tools\zip.exe a ..\backup\TA-backup-!backup_timestamp!.zip TA.img TA.md5 TA.blk TA.serial TA.timestamp TA.version
+cd $TMP
+
+backup_timestamp=`date +%Y-%m-%d.%H%M%S`
+echo $backup_backupMD5 > TA.md5
+echo $partition > TA.blk
+echo $serial > TA.serial
+echo $backup_timestamp > TA.timestamp
+echo $1 > TA.version
+uname -sp > TA.platform
+
+zip ../TA-backup-$backup_timestamp.zip TA.img TA.md5 TA.blk TA.serial TA.timestamp TA.version TA.platform
+
+cd ..
+
+rm -rf $TMP
+
+./scripts/linux/busybox-off.sh

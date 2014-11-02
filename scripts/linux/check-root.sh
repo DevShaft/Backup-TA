@@ -1,3 +1,5 @@
+#!/bin/bash 
+
 export BB=/data/local/tmp/busybox-backup-ta
 
 SU=/system/bin/su

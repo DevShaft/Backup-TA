@@ -1,3 +1,5 @@
+#!/bin/bash 
+
 sudo adb kill-server
 sudo adb start-server
 adb wait-for-device 
@@ -7,6 +9,13 @@ adb wait-for-device
 partition=`./find.sh`
 
 #if empty, abort
+echo partition $partition
+
+if [[ $partition == "" ]]
+then
+	echo No partition found
+	exit -1
+fi
 
 ./busybox-off.sh
 #debug

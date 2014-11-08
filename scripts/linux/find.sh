@@ -3,12 +3,12 @@
 PARTITION_BY_NAME=/dev/block/platform/msm_sdcc.1/by-name/TA
 
 inspectPartition() {
-	opId=`adb shell su -c "$BB cat /dev/block/$1 | $BB grep -s -m 1 -c 'OP_ID='"`
-	opName=`adb shell su -c "$BB cat /dev/block/$1 | $BB grep -s -m 1 -c 'OP_NAME='"`
-	rooting=`adb shell su -c "$BB cat /dev/block/$1 | $BB grep -s -m 1 -c 'ROOTING_ALLOWED='"`
-	s1Boot=`adb shell su -c "$BB cat /dev/block/$1 | $BB grep -s -m 1 -c -i 'S1_Boot'"`
-	s1Loader=`adb shell su -c "$BB cat /dev/block/$1 | $BB grep -s -m 1 -c -i 'S1_Loader'"`
-	s1Hw=`adb shell su -c "$BB cat /dev/block/$1 | $BB grep -s -m 1 -c -i 'S1_HWConf'"`
+	opId=`adb shell su -c "$BB cat /dev/block/$1" | grep -s -m 1 -c 'OP_ID='`
+	opName=`adb shell su -c "$BB cat /dev/block/$1" | grep -s -m 1 -c 'OP_NAME='`
+	rooting=`adb shell su -c "$BB cat /dev/block/$1" | grep -s -m 1 -c 'ROOTING_ALLOWED='`
+	s1Boot=`adb shell su -c "$BB cat /dev/block/$1" | grep -s -m 1 -c -i 'S1_Boot'`
+	s1Loader=`adb shell su -c "$BB cat /dev/block/$1" | grep -s -m 1 -c -i 'S1_Loader'`
+	s1Hw=`adb shell su -c "$BB cat /dev/block/$1" | grep -s -m 1 -c -i 'S1_HWConf'`
 
 	if [[ "$opId" =~ "1" ]] && [[ "$opName" =~ "1" ]] && [[ "$rooting" =~ "1" ]] && [[ "$s1Boot" =~ "1" ]] && [[ "$s1Loader" =~ "1" ]] && [[ "$s1Hw" =~ "1" ]]
 	then
@@ -38,25 +38,31 @@ then
 	for part in `adb shell su -c "$BB cat /proc/partitions " | awk '{if ($3<=9999) print $4}'|grep --color=never mmcblk|xargs`
 	do
 		safepart=`expr match "$part" '\([0-9a-z\/]*\)'`
-		echo ? $safepart
+		echo Testing $safepart
 		possible=$(inspectPartition "$safepart")
-		echo = $possible
-		x=`adb shell su -c "$BB cat /dev/block/$safepart | $BB grep -s -m 1 -c 'OP_ID='"`
+		
+		if [[ "$possible" =~ "mmc" ]] && [[ "$partition" =~ "mmc" ]]
+		then
+			echo Found more than one partition
+			exit 1
+		fi
+
+		if [[ "$possible" =~ "mmc" ]] && [[ "$partition" == "" ]]
+		then
+			partition="$possible"
+		fi
 	done
 	
-	echo 
+	echo partition $partition
 
-	#more than one match - fail 
-
-	#one - OK
+	if [[ "$partition" == "" ]]
+	then
+		echo No partitions found.
+		exit 1
+	fi
 		
-	echo found /dev/block/$part
-	export partition=/dev/block/$part
-
-	#else
-
-	echo No partitions found.
-	exit 1
+	echo found by type /dev/block/$partition
+	export backup_defaultTA=/dev/block/$partition
 fi
 
 backup_defaultTAvalid=`adb shell su -c "if [ -b $backup_defaultTA ]; then echo '1'; else echo '0'; fi"`
@@ -64,7 +70,7 @@ backup_defaultTAvalid=`adb shell su -c "if [ -b $backup_defaultTA ]; then echo '
 if [[ "$backup_defaultTAvalid" =~ "1" ]]
 then
 	export partition=$backup_defaultTA
-	echo found $partition
+	echo found and valid $partition
 else 
 	echo Partition found but not valid
 	echo backup_defaultTA $backup_defaultTA

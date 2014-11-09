@@ -27,14 +27,14 @@ fi
 echo =======================================
 echo  BACKUP TA PARTITION
 echo =======================================
-backup_currentPartitionMD5=`adb shell su -c "$BB md5sum $partition" | awk {'print $1'}`
+backup_currentPartitionMD5=`adb shell su -c "$BB md5 $partition" | awk {'print $1'}`
 adb shell su -c "$BB dd if=$partition of=/sdcard/backupTA.img"
 
 echo
 echo =======================================
 echo  INTEGRITY CHECK
 echo =======================================
-backup_backupMD5=`adb shell su -c "$BB md5sum /sdcard/backupTA.img" | awk {'print $1'}`
+backup_backupMD5=`adb shell su -c "$BB md5 /sdcard/backupTA.img" | awk {'print $1'}`
 
 if [ "$backup_currentPartitionMD5" != "$backup_backupMD5" ]
 then

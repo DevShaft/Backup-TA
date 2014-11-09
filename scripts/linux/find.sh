@@ -69,7 +69,7 @@ backup_defaultTAvalid=`adb shell su -c "if [ -b $backup_defaultTA ]; then echo '
 
 if [[ "$backup_defaultTAvalid" =~ "1" ]]
 then
-	export partition=$backup_defaultTA
+	echo $backup_defaultTA > /tmp/partfile
 	echo found and valid $partition
 else 
 	echo Partition found but not valid

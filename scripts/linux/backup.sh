@@ -8,9 +8,10 @@ adb wait-for-device
 
 ./busybox-on.sh
 
-
-partition=""
+touch /tmp/partfile
 ./find.sh
+partition=`cat /tmp/partfile`
+rm /tmp/partfile
 
 echo =======================================
 echo  FIND TA PARTITION
@@ -22,9 +23,6 @@ then
 	echo No partition found
 	exit -1
 fi
-
-echo debug exit
-exit 1
 
 echo =======================================
 echo  BACKUP TA PARTITION

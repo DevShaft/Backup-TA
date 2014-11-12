@@ -28,7 +28,11 @@ if "!errorlevel!" == "1" (
 				if "!errorlevel!" == "1" (
 					set CHOICE=tools\choice64.exe
 					set CHOICE_TEXT_PARAM=/M
-				) 
+				) else (
+					echo Choice command could not be found, terminating
+					pause
+					goto :eof
+				)
 			)
 		)
 	)

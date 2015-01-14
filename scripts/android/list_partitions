@@ -1,0 +1,1 @@
+awk '{if (\$3<=9999 && match (\$4, \"mmcblk\")) printf \"%s\n\", \$4}' /proc/partitions

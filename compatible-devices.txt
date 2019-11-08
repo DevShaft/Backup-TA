@@ -33,6 +33,7 @@ Sony Xperia Tipo
 Sony Xperia J
 Sony Xperia E
 Sony Xperia Tablet Z
+Sony Xperia Tablet Z2 SGP528 (LTE,WiFi etc.. NOT tested on WiFi only model) Codename:Castor Board:Shinano
 
 Most likely: 
 -----------------------
